@@ -52,9 +52,7 @@ class GetAuthToken(CkanCommand):
         assuming it is correct.
         """
         from ga_auth import init_service
-        init_service('token.dat',
-                      self.args[0] if self.args
-                                   else 'credentials.json')
+        init_service('token.dat', 'credentials.json')
 
 class FixTimePeriods(CkanCommand):
     """

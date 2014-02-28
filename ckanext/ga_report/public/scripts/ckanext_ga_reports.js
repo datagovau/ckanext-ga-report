@@ -126,6 +126,5 @@ CKAN.GA_Reports.bind_month_selector = function() {
     window.location = url;
   };
   var selectors = $('select[name="month"]');
-  assert(selectors.length>0);
   selectors.bind('change', handler);
 };

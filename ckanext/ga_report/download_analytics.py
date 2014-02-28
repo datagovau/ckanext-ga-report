@@ -121,13 +121,13 @@ class DownloadAnalytics(object):
                 accountName = config.get('googleanalytics.account')
 
                 log.info('Downloading analytics for dataset views')
-                data = self.download(start_date, end_date, '~/%s/dataset/[a-z0-9-_]+' % accountName)
+                data = self.download(start_date, end_date, '~^/dataset/[a-z0-9-_]+')
 
                 log.info('Storing dataset views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
 
                 log.info('Downloading analytics for publisher views')
-                data = self.download(start_date, end_date, '~/%s/publisher/[a-z0-9-_]+' % accountName)
+                data = self.download(start_date, end_date, '~^/organization/[a-z0-9-_]+')
 
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data,)
@@ -177,7 +177,7 @@ class DownloadAnalytics(object):
         data = collections.defaultdict(list)
         rows = results.get('rows',[])
         for row in rows:
-            url = _normalize_url('http:/' + row[0])
+            url = row[0]
             data[url].append( (row[1], int(row[2]),) )
         ga_model.update_social(period_name, data)
 
@@ -192,6 +192,7 @@ class DownloadAnalytics(object):
 
         # Supported query params at
         # https://developers.google.com/analytics/devguides/reporting/core/v3/reference
+	# https://ga-dev-tools.appspot.com/explorer/
         try:
             args = {}
             args["sort"] = "-ga:pageviews"
@@ -203,7 +204,7 @@ class DownloadAnalytics(object):
             args["ids"] = "ga:" + self.profile_id
             args["filters"] = query
             args["alt"] = "json"
-
+            print args
             results = self._get_json(args)
 
         except Exception, e:
@@ -212,11 +213,13 @@ class DownloadAnalytics(object):
 
         packages = []
         log.info("There are %d results" % results['totalResults'])
-        for entry in results.get('rows'):
+	if results['totalResults'] > 0:
+          for entry in results.get('rows'):
             (loc,pageviews,visits) = entry
-            url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
-
-            if not url.startswith('/dataset/') and not url.startswith('/publisher/'):
+            #url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
+            url = loc
+	    #print url
+            if not url.startswith('/dataset/') and not url.startswith('/organization/'):
                 # filter out strays like:
                 # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
                 # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
@@ -330,8 +333,7 @@ class DownloadAnalytics(object):
         ga_model.update_sitewide_stats(period_name, "Totals", data, period_complete_day)
 
         # Bounces from / or another configurable page.
-        path = '/%s%s' % (config.get('googleanalytics.account'),
-                          config.get('ga-report.bounce_url', '/'))
+        path = '/' #% (config.get('googleanalytics.account'),                          config.get('ga-report.bounce_url', '/'))
 
         try:
             # Because of issues of invalid responses, we are going to make these requests

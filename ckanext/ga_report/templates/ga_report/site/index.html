@@ -8,20 +8,11 @@
   <py:def function="page_title">Site usage</py:def>
 
   <py:def function="optional_head">
-    <link rel="stylesheet" type="text/css" href="/scripts/vendor/rickshaw.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/ga_report.css?1"/>
-    <script type="text/javascript" src="/scripts/modernizr-2.6.2.custom.js"></script>
-    <script type="text/javascript" src="/scripts/ckanext_ga_reports.js?1"></script>
-    <script type="text/javascript" src="/scripts/vendor/jquery.sparkline.modified.js"></script>
-    <script type="text/javascript" src="/scripts/rickshaw_ie7_shim.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/d3.v2.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/d3.layout.min.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/rickshaw.min.js"></script>
   </py:def>
 
  <py:match path="breadcrumbs">
-    <li><a href="/data/site-usage">Site Analytics</a></li>
-    <li><a href="/data/site-usage">Site-wide</a></li>
+    <li><a href="/site-usage">Site Analytics</a></li>
+    <li><a href="/site-usage">Site-wide</a></li>
   </py:match>
 
   <div py:match="content">
@@ -37,8 +28,8 @@
           <div class="panel-heading"><strong>Jump To...</strong></div>
           <div class="panel-body">
             <ul>
-              <li><a href="/data/site-usage/publisher">Publisher Usage Statistics</a></li>
-              <li><a href="/data/site-usage/dataset">Dataset Usage Statistics</a></li>
+              <li><a href="/site-usage/publisher">Publisher Usage Statistics</a></li>
+              <li><a href="/site-usageset">Dataset Usage Statistics</a></li>
             </ul>
           </div>
         </div>
@@ -46,14 +37,6 @@
     </div>
 
     <div class="row" style="background: #fff;">
-      <div class="col-md-4">
-        <div class="whitebox">
-          <strong>Graph Legend</strong>
-          <div id="graph-legend-container">
-            <div style="display: none;" id="legend_none">(No graph is loaded)</div>
-          </div>
-        </div>
-      </div>
       <div class="col-md-8">
         <div class="whitebox">
           <div class="tabbable">
@@ -210,7 +193,7 @@
     </script>
   </py:def>
 
-  <xi:include href="../../layout.html" />
+  <xi:include href="layout.html" />
 </html>
 
 

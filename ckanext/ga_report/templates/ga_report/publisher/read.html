@@ -21,10 +21,10 @@
 
 
  <py:match path="breadcrumbs">
-    <li><a href="/data/site-usage">Site Analytics</a></li>
+    <li><a href="/site-usage">Site Analytics</a></li>
     <py:if test="c.publisher">
-      <li><a href="/data/site-usage/publisher">Publishers</a></li>
-      <li py:if="c.publisher"><a href="/data/site-usage/publisher/${c.publisher.name}">${c.publisher.title}</a></li>
+      <li><a href="/site-usage/publisher">Publishers</a></li>
+      <li py:if="c.publisher"><a href="/site-usage/publisher/${c.publisher.name}">${c.publisher.title}</a></li>
     </py:if>
     <py:if test="not c.publisher">
       <li><a href="${request.url}">Usage By Dataset</a></li>
@@ -42,14 +42,6 @@
     </h1>
 
     <div class="row" style="background: #fff;">
-      <div class="col-md-4">
-        <div class="whitebox">
-          <strong>Graph Legend</strong>
-          <div id="graph-legend-container">
-            <div style="display: none;" id="legend_none">(No graph is loaded)</div>
-          </div>
-        </div>
-      </div>
       <div class="col-md-8">
         <div class="whitebox">
           <py:if test="c.graph_data">
@@ -103,7 +95,7 @@
 
   </div>
 
-  <xi:include href="../../layout.html" />
+  <xi:include href="../site/layout.html" />
 </html>
 
 
