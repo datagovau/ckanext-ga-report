@@ -2,9 +2,11 @@ import os
 import logging
 import datetime
 import httplib
+import urllib
 import collections
 import requests
 import json
+import re
 from pylons import config
 from ga_model import _normalize_url
 import ga_model
@@ -424,7 +426,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["filters"] = 'ga:eventAction==download'
+            args["filters"] = 'ga:eventAction==Download'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
             args["alt"] = "json"
@@ -450,7 +452,7 @@ class DownloadAnalytics(object):
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d done so far', progress_count, progress_total)
 
-                url = result[0].strip()
+                url = urllib.unquote(result[0].strip())
 
                 # Get package id associated with the resource that has this URL.
                 q = model.Session.query(model.Resource)
@@ -458,8 +460,15 @@ class DownloadAnalytics(object):
                     r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
                 else:
                     r = q.filter(model.Resource.url.like("%s%%" % url)).first()
+		
+		# new style internal download links
+		if re.search('(?:/resource/)(.*)(?:/download/)',url):
+		    resource_id = re.search('(?:/resource/)(.*)(?:/download/)',url)
+                    r = q.filter(model.Resource.id.like("%s%%" % resource_id.group(1))).first()
 
                 package_name = r.resource_group.package.name if r else ""
+
+
                 if package_name:
                     data[package_name] = data.get(package_name, 0) + int(result[1])
                 else:
@@ -472,7 +481,7 @@ class DownloadAnalytics(object):
         log.info('Associating downloads of resource URLs with their respective datasets')
         process_result_data(results.get('rows'))
 
-        try:
+        '''try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
             headers = {'authorization': 'Bearer ' + self.token}
@@ -492,7 +501,7 @@ class DownloadAnalytics(object):
             results = dict(url=[])
 
         log.info('Associating downloads of cache resource URLs with their respective datasets')
-        process_result_data(results.get('rows'), cached=False)
+        process_result_data(results.get('rows'), cached=False)'''
 
         self._filter_out_long_tail(data, MIN_DOWNLOADS)
         ga_model.update_sitewide_stats(period_name, "Downloads", data, period_complete_day)
