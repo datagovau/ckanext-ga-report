@@ -67,17 +67,17 @@ class GAReportPlugin(p.SingletonPlugin):
             action='publisher_csv'
         )
         map.connect(
-            '/site-usagesetsets_{id}_{month}.csv',
+            '/site-usage/dataset/datasets_{id}_{month}.csv',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='dataset_csv'
         )
         map.connect(
-            '/site-usageset',
+            '/site-usage/dataset',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='read'
         )
         map.connect(
-            '/site-usageset/{id}',
+            '/site-usage/dataset/{id}',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='read_publisher'
         )
