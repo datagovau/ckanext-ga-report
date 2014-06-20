@@ -342,7 +342,8 @@ class GaDatasetReport(BaseController):
                         downloads += int(x.value)
                 else:
                     downloads = 'No data'
-                top_packages.append((package, entry.pageviews, entry.visits, downloads))
+                if package.private == False:
+                    top_packages.append((package, entry.pageviews, entry.visits, downloads))
             else:
                 log.warning('Could not find package associated package')
 
