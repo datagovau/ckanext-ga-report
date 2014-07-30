@@ -68,4 +68,5 @@
 }
 .tab-content {
   padding-top: 12px;
+    display: block !important;
 }

@@ -148,28 +148,32 @@
             </content>
           </div> <!-- /content -->
         </div>
-        <div class="span3 sidebar-outer">
-          <div id="sidebar">
-            <ul class="widget-list">
-              <py:if test="defined('primary_sidebar_extras')">
-                ${primary_sidebar_extras()}
-              </py:if>
-              <primarysidebar>
-                <!-- Primary Side Bar Goes Here -->
-              </primarysidebar>
-            </ul>
+          <div class="span3 sidebar-outer">
+              <div id="sidebar">
+                  <div class="col-md-4">
+                      <div class="whitebox">
+                          <strong>Graph Legend</strong>
+                          <div id="graph-legend-container">
+                              <div style="display: none;" id="legend_none">(No graph is loaded)</div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <ul class="widget-list">
+                      <py:if test="defined('primary_sidebar_extras')">
+                          ${primary_sidebar_extras()}
+                      </py:if>
+                      <primarysidebar>
+                          <!-- Primary Side Bar Goes Here -->
+                      </primarysidebar>
+                  </ul>
+              </div>
           </div>
-        </div>
-        
       </div>
-
-
-
-
     </div>
+    <br/><br/>
 </div>
- 
-
+    <div class="clearfix"></div>
 
 
 
