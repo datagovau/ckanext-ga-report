@@ -34,16 +34,17 @@
   <link rel="stylesheet" href="${h.url_for_static('/css/chosen.css')}" type="text/css" />
   <link rel="stylesheet" href="${h.url_for_static('/css/style.css?v=2')}" />
   ${jsConditionalForIe(9, '&lt;script type="text/javascript" src="' + h.url_for_static('/scripts/vendor/html5shiv/html5.js') + '"&gt;&lt;/script&gt;')}
+    <script src="${h.url_for_static('/scripts/vendor/jquery/1.7.1/jquery.js')}"></script>
 
   <py:if test="defined('optional_head')">
     ${optional_head()}
   </py:if>
 
   ${h.literal(getattr(g, 'template_head_end', ''))}
-  <link rel="stylesheet" href="/styles/fontawesome.css">
-  <link rel="stylesheet" href="/styles/select2.css">
-  <link rel="stylesheet" href="/styles/main.css">
-  <link rel="stylesheet" href="/styles/new.css">
+  <link rel="stylesheet" href="styles/fontawesome.css"/>
+  <link rel="stylesheet" href="/styles/select2.css"/>
+  <link rel="stylesheet" href="${h.include_resource('ckanext-datavic/styles/main.css')}"/>
+  <link rel="stylesheet" href="/styles/new.css"/>
 </head>
 
 <body class="${request.environ.get('pylons.routes_dict', {}).get('action')}
@@ -61,10 +62,10 @@
             <h1 class="logo-holder">
 
                 <a href="/home">
-                    <img src="/images/logo.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="138" height="54">
+                    <img src="/images/logo.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="138" height="54"/>
                 </a>
                 <a href="http://www.vic.gov.au/">
-                    <img src="/images/victoria-logo-small.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="62" height="36">
+                    <img src="/images/victoria-logo-small.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="62" height="36"/>
                 </a>
             </h1>
             <div class="nav-collapse collapse">
@@ -93,7 +94,7 @@
                 <label for="field-sitewide-search">
                     Search Datasets
                 </label>
-                <input id="field-sitewide-search" type="text" name="q" placeholder="Search for data..." title="Enter the terms you wish to search for.">
+                <input id="field-sitewide-search" type="text" name="q" placeholder="Search for data..." title="Enter the terms you wish to search for."/>
                 <button class="btn-search" type="submit" title="Search button">
                     <i class="icon-search"></i>
                 </button>
@@ -193,7 +194,7 @@
                     <div class="powered">
                         <span>Powered by</span>
                         <a href="http://ckan.org/">
-                            <img src="/images/ckan-logo-footer-black.png" alt="image description" width="68" height="20">
+                            <img src="/images/ckan-logo-footer-black.png" alt="image description" width="68" height="20"/>
                         </a>
                     </div>
                 </div>
@@ -217,7 +218,7 @@
                 </div>
                 <div class="span2">
                     <a href="http://www.vic.gov.au/">
-                        <img src="http://web.data.dsdbi.links.com.au/data/images/victoria-logo.png" alt="image description" width="103" height="59" class="alignright">
+                        <img src="http://web.data.dsdbi.links.com.au/data/images/victoria-logo.png" alt="image description" width="103" height="59" class="alignright" />
                     </a>
                 </div>
             </div>
@@ -229,7 +230,7 @@
  <!-- eo #container -->
   
   <div style="display:none;" id="scripts">
-  <script src="${h.url_for_static('/scripts/vendor/jquery/1.7.1/jquery.js')}"></script>
+
   <script type="text/javascript" src="${h.url_for_static('/scripts/vendor/json2.js')}"></script>
   <script type="text/javascript" src="${h.url_for_static('/scripts/vendor/jquery.tmpl/beta1/jquery.tmpl.js')}"></script>
   <script type="text/javascript" src="${h.url_for_static('/scripts/vendor/jquery.cookie/jquery.cookie.min.js')}"></script>
