@@ -276,6 +276,18 @@
     });
 
     if (document.querySelector('.tabbable .nav.nav-tabs')) document.querySelector('.tabbable .nav.nav-tabs').setAttribute('class', 'add-nav')
+
+    var download = document.querySelector('.btn.button.btn-primary.btn-sm.pull-right')
+    if (download){
+      var href = download.getAttribute('href')
+      download.parentElement.setAttribute('class', 'user-block-holder')
+      var newButton = document.createElement('ul')
+      newButton.style.float = 'right'
+      newButton.setAttribute('class', 'btn-holder')
+      newButton.innerHTML = '<li tabindex="0"><a class="resource-download" href="' + href + '">Download as CSV<i class="icon-arrow-down"></i></a></li>'
+      download.parentElement.insertBefore(newButton, download)
+      download.parentElement.removeChild(download);
+    }
   </script>
 
   <py:if test="h.asbool(config.get('ckan.tracking_enabled', 'false'))">
