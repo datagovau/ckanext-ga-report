@@ -41,7 +41,7 @@
   </py:if>
 
   ${h.literal(getattr(g, 'template_head_end', ''))}
-  <link rel="stylesheet" href="styles/fontawesome.css"/>
+  <link rel="stylesheet" href="/styles/fontawesome.css"/>
   <link rel="stylesheet" href="/styles/select2.css"/>
   <link rel="stylesheet" href="${h.include_resource('ckanext-datavic/styles/main.css')}"/>
   <link rel="stylesheet" href="/styles/new.css"/>
@@ -59,15 +59,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <h1 class="logo-holder">
+            <div class="logo-holder">
 
                 <a href="/home">
-                    <img src="/images/logo.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="138" height="54"/>
-                </a>
-                <a href="http://www.vic.gov.au/">
-                    <img src="/images/victoria-logo-small.png" alt="Victorian Government Data Directory Logo" title="Victorian Government Data Directory Logo" width="62" height="36"/>
-                </a>
-            </h1>
+                <img src="/images/logo.png" alt="data.vic.gov.au"  width="138" height="54">
+              </a>
+              <a href="http://www.vic.gov.au/">
+                <img src="/images/victoria-logo-small.png" alt="State Government Victoria"  width="62" height="36">
+              </a>
+            </div>
             <div class="nav-collapse collapse">
 
 
@@ -128,12 +128,10 @@
       </div>
 
      <ol class="breadcrumb">
-        <li class="home"><a href="/" title="Home" name="main-content"><i class="icon-home"></i><span> Home</span></a>
-        </li>
-        <li><a href="/data/dataset">Datasets</a>
-        </li>
-        <li class="active"><a href="/data/dataset/native-vegetation-regulation-2013-strategic-biodiversity-score-version-3">Native Vegetation Regulation ...</a>
-        </li>
+        <li class="home"><a href="/" title="Home" name="main-content"><i class="icon-home"></i></a>
+        </li> 
+        <li> / </li>
+        <li class="active"> Statistics</li>
     </ol>
 
       <div class="row wrapper">
@@ -188,17 +186,14 @@
             <div class="row">
                 <div class="span12">
                     <ul class="social-networks">
-                        <li><a class="facebook" href="http://www.vic.gov.au/social-media/facebook.html">facebook</a>
-                        </li>
-                        <li><a class="twitter" href="http://www.vic.gov.au/social-media/twitter.html">twitter</a>
-                        </li>
-                        <li><a class="github" href="https://github.com/datavicgovau">github</a>
-                        </li>
+                      <li><a class="facebook" href="http://www.vic.gov.au/social-media/facebook.html">facebook</a></li>
+                      <li><a class="twitter" href=" http://www.vic.gov.au/social-media/twitter.html">twitter</a></li>
+                      <!--<li><a class="github" href="">github</a></li>-->
                     </ul>
                     <div class="powered">
                         <span>Powered by</span>
                         <a href="http://ckan.org/">
-                            <img src="/images/ckan-logo-footer-black.png" alt="image description" width="68" height="20"/>
+                            <img src="/images/ckan-logo-footer-black.png" alt="CKAN" width="68" height="20">
                         </a>
                     </div>
                 </div>
@@ -222,7 +217,7 @@
                 </div>
                 <div class="span2">
                     <a href="http://www.vic.gov.au/">
-                        <img src="http://web.data.dsdbi.links.com.au/data/images/victoria-logo.png" alt="image description" width="103" height="59" class="alignright" />
+                        <img src="/images/victoria-logo.png" alt="State Government Victoria" width="103" height="59" class="alignright">
                     </a>
                 </div>
             </div>
