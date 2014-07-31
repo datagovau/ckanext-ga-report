@@ -288,6 +288,12 @@
       download.parentElement.insertBefore(newButton, download)
       download.parentElement.removeChild(download);
     }
+    var links = document.querySelectorAll('a[href^="/site-usage"]')
+    if (links.length){
+      for (item in links){
+        links[item].setAttribute('href', '/data'+ links[item].getAttribute('href'))
+      }
+    }
   </script>
 
   <py:if test="h.asbool(config.get('ckan.tracking_enabled', 'false'))">
