@@ -50,7 +50,9 @@
 <body class="${request.environ.get('pylons.routes_dict', {}).get('action')}
              ${request.environ.get('pylons.routes_dict', {}).get('controller').split(':')[-1]}
              ${defined('body_class') and body_class()}
-  ">
+  "><div id="skip-link"> 
+    <a tabindex="0" href="#main-content" class="element-invisible element-focusable">Skip to main content</a> 
+  </div> 
 
     <header class="navbar navbar-static-top masthead">
         <div class="container header-area">
@@ -61,11 +63,11 @@
             </button>
             <div class="logo-holder">
 
-                <a href="/home">
-                <img src="/images/logo.png" alt="data.vic.gov.au"  width="138" height="54">
+              <a href="/home">
+                <img src="/images/logo.png" alt="data.vic.gov.au"  width="138" height="54"></img>
               </a>
               <a href="http://www.vic.gov.au/">
-                <img src="/images/victoria-logo-small.png" alt="State Government Victoria"  width="62" height="36">
+                <img src="/images/victoria-logo-small.png" alt="State Government Victoria"  width="62" height="36"></img>
               </a>
             </div>
             <div class="nav-collapse collapse">
@@ -136,7 +138,7 @@
 
       <div class="row wrapper">
 
-        <div class="span9 content-outer">
+        <div class="primary span9">
           <div id="content">
             <py:if test="defined('content')">
               ${content()}
@@ -146,11 +148,15 @@
             </content>
           </div> <!-- /content -->
         </div>
-          <div class="span3 sidebar-outer">
-              <div id="sidebar">
+        <section class=' module-narrow'>
+          <aside class="secondary span3">
+            <div class="aside-image">
+      <img src="/images/img15.png" alt="" width="97" height="97"></img>
+    </div>
+              <div >
                   <div class="col-md-4">
                       <div class="whitebox">
-                          <strong>Graph Legend</strong>
+                          <h2 class="module-heading">Graph Legend</h2>
                           <div id="graph-legend-container">
                               <div style="display: none;" id="legend_none">(No graph is loaded)</div>
                           </div>
@@ -166,7 +172,8 @@
                       </primarysidebar>
                   </ul>
               </div>
-          </div>
+          </aside>
+        </section>
       </div>
     </div>
     <br/><br/>
@@ -185,15 +192,11 @@
             
             <div class="row">
                 <div class="span12">
-                    <ul class="social-networks">
-                      <li><a class="facebook" href="http://www.vic.gov.au/social-media/facebook.html">facebook</a></li>
-                      <li><a class="twitter" href=" http://www.vic.gov.au/social-media/twitter.html">twitter</a></li>
-                      <!--<li><a class="github" href="">github</a></li>-->
-                    </ul>
+                    
                     <div class="powered">
                         <span>Powered by</span>
                         <a href="http://ckan.org/">
-                            <img src="/images/ckan-logo-footer-black.png" alt="CKAN" width="68" height="20">
+                            <img src="/images/ckan-logo-footer-black.png" alt="CKAN" width="68" height="20"></img>
                         </a>
                     </div>
                 </div>
@@ -217,7 +220,7 @@
                 </div>
                 <div class="span2">
                     <a href="http://www.vic.gov.au/">
-                        <img src="/images/victoria-logo.png" alt="State Government Victoria" width="103" height="59" class="alignright">
+                        <img src="/images/victoria-logo.png" alt="State Government Victoria" width="103" height="59" class="alignright"></img>
                     </a>
                 </div>
             </div>
@@ -288,12 +291,7 @@
       download.parentElement.insertBefore(newButton, download)
       download.parentElement.removeChild(download);
     }
-    var links = document.querySelectorAll('a[href^="/site-usage"]')
-    if (links.length){
-      for (item in links){
-        links[item].setAttribute('href', '/data'+ links[item].getAttribute('href'))
-      }
-    }
+    
   </script>
 
   <py:if test="h.asbool(config.get('ckan.tracking_enabled', 'false'))">

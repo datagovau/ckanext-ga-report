@@ -18,9 +18,15 @@ CKAN.GA_Reports.render_rickshaw = function( css_name, data, mode, colorscheme ) 
         return;
     }
     if (data.length==0) {
-        renderError('alert-info','There is not enough data to render a graph.','(No graph available)');
+        renderError('alert-info','There is not enough data to render a graph.','<p class=\'module-content empty\'>(No graph available)</p>');
         return
     }
+    cap_name =css_name.split('-').join(' ')[0].toUpperCase() +  css_name.split('-').join(' ').split('_').join(' ').slice(1)
+    if (cap_name.indexOf('Os') === 0){
+      cap_name = cap_name.slice(0,2).toUpperCase() + cap_name.slice(2)
+    }
+    var h2 = $('<h2 class="module-heading">').text(cap_name)
+    h2.appendTo(graphLegends);
     var myLegend = $('<div id="legend_'+css_name+'"/>').appendTo(graphLegends);
 
     var palette = new Rickshaw.Color.Palette( { scheme: colorscheme } );
@@ -55,7 +61,8 @@ CKAN.GA_Reports.render_rickshaw = function( css_name, data, mode, colorscheme ) 
       graph: graph,
       legend: legend
     } );
-    myLegend.prepend('<div class="instructions">Click on a series below to isolate its graph:</div>');
+    
+    // myLegend.prepend('<h2 class="module-heading">Click on a series below to isolate its graph:</h2>');
     graph.render();
 };
 

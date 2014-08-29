@@ -27,22 +27,9 @@
   <div py:match="content">
     <div class="row">
       <div class="col-sm-7 col-md-8 col-lg-9">
-        <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all')">
-          <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
-        </py:with>
         <h1>Site Usage</h1>
       </div>
-      <div class="col-sm-5 col-md-4 col-lg-3">
-        <div class="panel panel-default">
-          <div class="panel-heading"><strong>Jump To...</strong></div>
-          <div class="panel-body">
-            <ul>
-              <li><a href="/site-usage/publisher">Publisher Usage Statistics</a></li>
-              <li><a href="/site-usage/dataset">Dataset Usage Statistics</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+
     </div>
 
     <div class="row" style="background: #fff;">
@@ -60,7 +47,7 @@
                   </ul>
               </li>
               <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operating Systems
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">OS
                       <b class="caret"></b></a>
                   <ul class="dropdown-menu">
                       <li><a href="#os" data-hash="os" data-toggle="tab">Operating Systems</a></li>
@@ -78,6 +65,11 @@
               <li><a href="#languages" data-hash="languages" data-toggle="tab">Languages</a></li>
               <li><a href="#country" data-hash="country" data-toggle="tab">Country</a></li>
             </ul>
+            <div>
+        <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all')">
+          <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
+        </py:with>
+      </div>
             <div class="tab-content">
               <div class="tab-pane active" id="totals">
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
@@ -188,6 +180,20 @@
        </div>
       </div>
     </div>
+
+
+    <div class="col-sm-5 col-md-4 col-lg-3">
+        <div class="panel panel-default">
+          <div class="panel-heading"><strong>Jump To...</strong></div>
+          <div class="panel-body">
+            <ul>
+              <li><a href="/data/site-usage/publisher">Publisher Usage Statistics</a></li>
+              <li><a href="/data/site-usage/dataset">Dataset Usage Statistics</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
 
   </div>
 
