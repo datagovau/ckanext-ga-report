@@ -83,7 +83,8 @@
        <tr>
          <th>Dataset</th>
          <th>Views</th>
-         <!--<th>Downloads</th>-->
+         <th>Downloads</th>
+         <th>Conversion Rate</th>
        </tr>
        <py:for each="package, views, visits,downloads in c.top_packages">
          <tr>
@@ -91,8 +92,10 @@
              ${h.link_to(package.title or package.name, h.url_for(controller='package', action='read', id=package.name))}
            </td>
            <td class="td-numeric">${views}</td>
-           <td class="td-numeric">${downloads}</td> 
-        </tr>
+           <td class="td-numeric">${downloads}</td>
+           <td class="td-numeric" py:if="downloads == 0">0%</td>
+           <td class="td-numeric" py:if="downloads > 0">${round((float(downloads)/float(views))*100,2)}%</td>
+         </tr>
       </py:for>
     </table>
   </py:if>

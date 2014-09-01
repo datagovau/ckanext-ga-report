@@ -120,7 +120,7 @@ def _normalize_url(url):
 def _get_package_and_publisher(url):
     # e.g. /dataset/fuel_prices
     # e.g. /dataset/fuel_prices/resource/e63380d4
-    dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
+    dataset_match = re.match('/data/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
         dataset = model.Package.get(dataset_ref)

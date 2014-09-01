@@ -317,7 +317,7 @@ class GaDatasetReport(BaseController):
 
         q = model.Session.query(GA_Url,model.Package)\
             .filter(model.Package.name==GA_Url.package_id)\
-            .filter(GA_Url.url.like('/dataset/%'))
+            .filter(GA_Url.url.like('/data/dataset/%'))
         if publisher:
             q = q.filter(GA_Url.department_id==publisher.name)
         q = q.filter(GA_Url.period_name==month)
@@ -396,7 +396,7 @@ class GaDatasetReport(BaseController):
         top_package_names = [ x[0].name for x in top_packages_all_time ]
         graph_query = model.Session.query(GA_Url,model.Package)\
             .filter(model.Package.name==GA_Url.package_id)\
-            .filter(GA_Url.url.like('/dataset/%'))\
+            .filter(GA_Url.url.like('/data/dataset/%'))\
             .filter(GA_Url.package_id.in_(top_package_names))
         all_series = {}
         for entry,package in graph_query:
@@ -469,7 +469,7 @@ def _get_top_publishers(limit=20):
         from ga_url
         where department_id <> ''
           and package_id <> ''
-          and url like '/dataset/%%'
+          and url like '/data/dataset/%%'
           and period_name=%s
         group by department_id order by views desc
         """
@@ -496,7 +496,7 @@ def _get_top_publishers_graph(limit=20):
         from ga_url
         where department_id <> ''
           and package_id <> ''
-          and url like '/dataset/%%'
+          and url like '/data/dataset/%%'
           and period_name='All'
         group by department_id order by views desc
         """
@@ -512,7 +512,7 @@ def _get_top_publishers_graph(limit=20):
             GA_Url.period_name,
             func.sum(cast(GA_Url.pageviews,sqlalchemy.types.INT)))\
         .filter( GA_Url.department_id.in_(department_ids) )\
-        .filter( GA_Url.url.like('/dataset/%') )\
+        .filter( GA_Url.url.like('/data/dataset/%') )\
         .filter( GA_Url.package_id!='' )\
         .group_by( GA_Url.department_id, GA_Url.period_name )
     graph_dict = {}

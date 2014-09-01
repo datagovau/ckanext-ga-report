@@ -123,13 +123,13 @@ class DownloadAnalytics(object):
                 accountName = config.get('googleanalytics.account')
 
                 log.info('Downloading analytics for dataset views')
-                data = self.download(start_date, end_date, '~^/dataset/[a-z0-9-_]+')
+                data = self.download(start_date, end_date, '~^/data/dataset/[a-z0-9-_]+')
 
                 log.info('Storing dataset views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
 
                 log.info('Downloading analytics for publisher views')
-                data = self.download(start_date, end_date, '~^/organization/[a-z0-9-_]+')
+                data = self.download(start_date, end_date, '~^/data/organization/[a-z0-9-_]+')
 
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data,)
@@ -221,7 +221,7 @@ class DownloadAnalytics(object):
             #url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
             url = loc
 	    #print url
-            if not url.startswith('/dataset/') and not url.startswith('/organization/'):
+            if not url.startswith('/data/dataset/') and not url.startswith('/data/organization/'):
                 # filter out strays like:
                 # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
                 # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
@@ -426,7 +426,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["filters"] = 'ga:eventAction==Download'
+            args["filters"] = 'ga:eventAction==download'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
             args["alt"] = "json"
@@ -451,29 +451,35 @@ class DownloadAnalytics(object):
                 progress_count += 1
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d done so far', progress_count, progress_total)
+                linkhref = re.search('linkhref(=.*data.vic.gov.au|=.*links.com.au|=)(.*?)&',result[0].strip())
+                if linkhref:
+                    url = linkhref.group(2)
 
-                url = urllib.unquote(result[0].strip())
+                    # Get package id associated with the resource that has this URL.
+                    q = model.Session.query(model.Resource)
+                    if cached:
+                        r = q.filter(model.Resource.cache_url.ilike("%%%s%%" % url)).first()
+                    else:
+                        r = q.filter(model.Resource.url.ilike("%%%s%%" % url)).first()
 
-                # Get package id associated with the resource that has this URL.
-                q = model.Session.query(model.Resource)
-                if cached:
-                    r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
-                else:
-                    r = q.filter(model.Resource.url.like("%s%%" % url)).first()
-		
-		# new style internal download links
-		if re.search('(?:/resource/)(.*)(?:/download/)',url):
-		    resource_id = re.search('(?:/resource/)(.*)(?:/download/)',url)
-                    r = q.filter(model.Resource.id.like("%s%%" % resource_id.group(1))).first()
+                    # new style internal download links
+                    if re.search('(?:/resource/)(.*)(?:/download/)', url):
+                        resource_id = re.search('(?:/resource/)(.*)(?:/download/)', url)
+                        r = q.filter(model.Resource.id.ilike("%s%%" % resource_id.group(1))).first()
+                        if not r:
+                            filename = re.search('(.files.*)', url)
+                            if filename:
+                                sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
+                                resource_id = model.Session.execute(sql).first()[0]
+                                r = q.filter(model.Resource.id == resource_id).first()
 
-                package_name = r.resource_group.package.name if r else ""
+                    package_name = r.resource_group.package.name if r else ""
 
-
-                if package_name:
-                    data[package_name] = data.get(package_name, 0) + int(result[1])
-                else:
-                    resources_not_matched.append(url)
-                    continue
+                    if package_name:
+                        data[package_name] = data.get(package_name, 0) + int(result[1])
+                    else:
+                        resources_not_matched.append(url)
+                        continue
             if resources_not_matched:
                 log.debug('Could not match %i or %i resource URLs to datasets. e.g. %r',
                           len(resources_not_matched), progress_total, resources_not_matched[:3])

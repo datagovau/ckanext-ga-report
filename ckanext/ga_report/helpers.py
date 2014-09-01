@@ -37,7 +37,7 @@ def single_popular_dataset(top=20):
     import random
 
     top_datasets = model.Session.query(GA_Url).\
-                   filter(GA_Url.url.like('/dataset/%')).\
+                   filter(GA_Url.url.like('/data/dataset/%')).\
                    order_by('ga_url.pageviews::int desc')
     num_top_datasets = top_datasets.count()
 
@@ -47,7 +47,7 @@ def single_popular_dataset(top=20):
         while not dataset:
             rand = random.randrange(0, min(top, num_top_datasets))
             ga_url = top_datasets[rand]
-            dataset = model.Package.get(ga_url.url[len('/dataset/'):])
+            dataset = model.Package.get(ga_url.url[len('/data/dataset/'):])
             if dataset and not dataset.state == 'active':
                 dataset = None
             # When testing, it is possible that top datasets are not available
@@ -102,11 +102,11 @@ def _datasets_for_publisher(publisher, count):
     datasets = {}
     entries = model.Session.query(GA_Url).\
         filter(GA_Url.department_id==publisher.name).\
-        filter(GA_Url.url.like('/dataset/%')).\
+        filter(GA_Url.url.like('/data/dataset/%')).\
         order_by('ga_url.pageviews::int desc').all()
     for entry in entries:
         if len(datasets) < count:
-            p = model.Package.get(entry.url[len('/dataset/'):])
+            p = model.Package.get(entry.url[len('/data/dataset/'):])
 
             if not p:
                 _log.warning("Could not find Package for {url}".format(url=entry.url))
