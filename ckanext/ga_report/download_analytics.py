@@ -414,6 +414,7 @@ class DownloadAnalytics(object):
         import ckan.model as model
 
         data = {}
+        data_org = {}
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -426,7 +427,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["filters"] = 'ga:eventAction==download'
+            args["filters"] = 'ga:eventAction==download,ga:eventAction==internal'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
             args["alt"] = "json"
@@ -451,38 +452,48 @@ class DownloadAnalytics(object):
                 progress_count += 1
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d done so far', progress_count, progress_total)
-                linkhref = re.search('linkhref(=.*data.vic.gov.au|=.*links.com.au|=)(.*?)&',result[0].strip())
-                if linkhref:
-                    url = linkhref.group(2)
+                if 'linktext=download' in result[0] or 'linktext=order resource' in result[0]:
+                    linkhref = re.search('linkhref(=.*data.vic.gov.au|=.*links.com.au|=)(.*?)&linkdivid',result[0].strip())
+                    if linkhref:
+                        url = linkhref.group(2)
 
-                    # Get package id associated with the resource that has this URL.
-                    q = model.Session.query(model.Resource)
-                    if cached:
-                        r = q.filter(model.Resource.cache_url.ilike("%%%s%%" % url)).first()
-                    else:
-                        r = q.filter(model.Resource.url.ilike("%%%s%%" % url)).first()
+                        # Get package id associated with the resource that has this URL.
+                        q = model.Session.query(model.Resource)
+                        if cached:
+                            r = q.filter(model.Resource.cache_url.ilike("%%%s%%" % url)).first()
+                        else:
+                            r = q.filter(model.Resource.url.ilike("%%%s%%" % url)).first()
 
-                    # new style internal download links
-                    if re.search('(?:/resource/)(.*)(?:/download/)', url):
-                        resource_id = re.search('(?:/resource/)(.*)(?:/download/)', url)
-                        r = q.filter(model.Resource.id.ilike("%s%%" % resource_id.group(1))).first()
-                        if not r:
-                            filename = re.search('(.files.*)', url)
-                            if filename:
-                                sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
-                                resource_id = model.Session.execute(sql).first()[0]
-                                r = q.filter(model.Resource.id == resource_id).first()
+                        # new style internal download links
+                        if re.search('(?:/resource/)(.*)(?:/download/)', url):
+                            resource_id = re.search('(?:/resource/)(.*)(?:/download/)', url)
+                            r = q.filter(model.Resource.id.ilike("%s%%" % resource_id.group(1))).first()
+                            if not r:
+                                filename = re.search('(.files.*)', url)
+                                if filename:
+                                    sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
+                                    resource_id = model.Session.execute(sql).first()[0]
+                                    r = q.filter(model.Resource.id == resource_id).first()
+                            if not r:
+                                filename = re.search('(\w+\.\w+$)', url)
+                                if filename:
+                                    sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
+                                    resource_id = model.Session.execute(sql).first()[0]
+                                    r = q.filter(model.Resource.id == resource_id).first()
 
-                    package_name = r.resource_group.package.name if r else ""
+                        package_name = r.resource_group.package.name if r else ""
 
-                    if package_name:
-                        data[package_name] = data.get(package_name, 0) + int(result[1])
-                    else:
-                        resources_not_matched.append(url)
-                        continue
+                        if package_name:
+                            data[package_name] = data.get(package_name, 0) + int(result[1])
+                            if r.resource_group.package.owner_org:
+                                owner_org = model.Group.get(r.resource_group.package.owner_org).name
+                                data_org[owner_org] = data_org.get(owner_org, 0) + int(result[1])
+                        else:
+                            resources_not_matched.append(url)
+                            continue
             if resources_not_matched:
-                log.debug('Could not match %i or %i resource URLs to datasets. e.g. %r',
-                          len(resources_not_matched), progress_total, resources_not_matched[:3])
+                    log.debug('Could not match %i or %i resource URLs to datasets. e.g. %r',
+                              len(resources_not_matched), progress_total, resources_not_matched[:3])
 
         log.info('Associating downloads of resource URLs with their respective datasets')
         process_result_data(results.get('rows'))
@@ -511,6 +522,7 @@ class DownloadAnalytics(object):
 
         self._filter_out_long_tail(data, MIN_DOWNLOADS)
         ga_model.update_sitewide_stats(period_name, "Downloads", data, period_complete_day)
+        ga_model.update_sitewide_stats(period_name, "Downloads by Organisation", data_org, period_complete_day)
 
     def _social_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Finds out which social sites people are referred from """

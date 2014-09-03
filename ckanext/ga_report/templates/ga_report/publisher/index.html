@@ -54,13 +54,15 @@
        <tr>
          <th>Publisher</th>
          <th class="td-numeric">Dataset Views</th>
+           <th class="td-numeric">Dataset Downloads</th>
        </tr>
-      <py:for each="publisher, views, visits in c.top_publishers">
+      <py:for each="publisher, views, visits, downloads in c.top_publishers">
         <tr>
           <td>
               ${h.link_to(publisher.title, h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport', action='read_publisher', id=publisher.name) + (("?month=" + c.month) if c.month else ''))}
           </td>
           <td class="td-numeric">${views}</td>
+            <td class="td-numeric">${downloads}</td>
         </tr>
       </py:for>
      </table>

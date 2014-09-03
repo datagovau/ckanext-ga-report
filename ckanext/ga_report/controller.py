@@ -14,7 +14,7 @@ from ga_model import GA_Url, GA_Stat, GA_ReferralStat, GA_Publisher
 
 log = logging.getLogger('ckanext.ga-report')
 
-DOWNLOADS_AVAILABLE_FROM = '2012-12'
+DOWNLOADS_AVAILABLE_FROM = '2014-07'
 
 def _get_month_name(strdate):
     import calendar
@@ -247,15 +247,16 @@ class GaDatasetReport(BaseController):
         response.headers['Content-Disposition'] = str('attachment; filename=publishers_%s.csv' % (month,))
 
         writer = csv.writer(response)
-        writer.writerow(["Publisher Title", "Publisher Name", "Views", "Visits", "Period Name"])
+        writer.writerow(["Publisher Title", "Publisher Name", "Views", "Visits", "Dataset Downloads", "Period Name"])
 
         top_publishers = _get_top_publishers(limit=None)
 
-        for publisher,view,visit in top_publishers:
+        for publisher,view,visit, download in top_publishers:
             writer.writerow([publisher.title.encode('utf-8'),
                              publisher.name.encode('utf-8'),
                              view,
                              visit,
+                             download,
                              month])
 
     def dataset_csv(self, id='all', month='all'):
@@ -265,6 +266,11 @@ class GaDatasetReport(BaseController):
         :param id: A Publisher ID or None if you want for all
         :param month: The time period, or 'all'
         '''
+        org_cache = {}
+        def get_org(owner_org):
+            if owner_org not in org_cache:
+                org_cache[owner_org] = (model.Group.get(owner_org).title.encode('utf-8') if model.Group.get(owner_org) else '')
+            return org_cache[owner_org]
         c.month = month if not month == 'all' else ''
         if id != 'all':
             c.publisher = model.Group.get(id)
@@ -277,11 +283,12 @@ class GaDatasetReport(BaseController):
             str('attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
 
         writer = csv.writer(response)
-        writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Period Name"])
+        writer.writerow(["Dataset Title", "Dataset Name", "Dataset Owner", "Views", "Visits", "Resource downloads", "Period Name"])
 
         for package,view,visit,downloads in packages:
             writer.writerow([package.title.encode('utf-8'),
                              package.name.encode('utf-8'),
+                             get_org(package.owner_org),
                              view,
                              visit,
                              downloads,
@@ -465,23 +472,25 @@ def _get_top_publishers(limit=20):
     month = c.month or 'All'
     connection = model.Session.connection()
     q = """
-        select department_id, sum(pageviews::int) views, sum(visits::int) visits
-        from ga_url
+        select department_id, sum(pageviews::int) views, sum(visits::int) visits, max(s.value) downloads
+        from ga_url full outer join (select period_name,key,value::int from ga_stat where stat_name = 'Downloads by Organisation'
+        union select 'All',key,sum(value::int) from ga_stat where stat_name = 'Downloads by Organisation' group by key) s on s.key = department_id
         where department_id <> ''
           and package_id <> ''
           and url like '/data/dataset/%%'
-          and period_name=%s
+          and ga_url.period_name=%s
+          and s.period_name=%s
         group by department_id order by views desc
         """
     if limit:
         q = q + " limit %s;" % (limit)
 
     top_publishers = []
-    res = connection.execute(q, month)
+    res = connection.execute(q, month, month)
     for row in res:
         g = model.Group.get(row[0])
         if g:
-            top_publishers.append((g, row[1], row[2]))
+            top_publishers.append((g, row[1], row[2], row[3]))
     return top_publishers
 
 
