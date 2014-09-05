@@ -35,7 +35,7 @@
     <div class="row" style="background: #fff;">
       <div class="col-md-8">
         <div class="whitebox">
-          <div class="tabbable">
+          <div class="tabbable site-usage">
             <ul class="nav nav-tabs">
               <li class="active"><a href="#totals" data-hash="totals" data-toggle="tab">Totals</a></li>
               <li class="dropdown">
@@ -205,6 +205,14 @@
         CKAN.GA_Reports.bind_sidebar();
         CKAN.GA_Reports.bind_month_selector();
       });
+      $('.dropdown').on('click', function(){
+        $('.dropdown.open').toggleClass('open')
+        $(this).toggleClass('open')
+      })
+      $('.dropdown-menu li a').on('click', function(){
+        $('.dropdown-menu li.active').toggleClass('active')
+        $(this).parent().toggleClass('active')
+      })
     </script>
   </py:def>
 
