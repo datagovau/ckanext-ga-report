@@ -205,23 +205,18 @@
         CKAN.GA_Reports.bind_sidebar();
         CKAN.GA_Reports.bind_month_selector();
       });
-      // $('.dropdown').on('click', function(){
-      //   if ($(this).hasClass('open')){
-      //     $(this).removeClass('open')
-      //     return false
-      //   }
-      //   else {
-      //     $('.dropdown.open').toggleClass('open')
-      //     $(this).toggleClass('open')
-      //     $('.dropdown.active').toggleClass('active')
-      //     $(this).toggleClass('active')
-      //     return false
-      //   }
-      // })
-      $('.dropdown-menu li a').on('click', function(){
-        $('.dropdown-menu li.active').toggleClass('active')
-        $(this).parent().toggleClass('active')
-        // $('.dropdown.open').toggleClass('open')
+      $('.site-usage li:not(.dropdown) a').on('click', function(){
+          $('.site-usage li.active').toggleClass('active')
+          $(this).parent().toggleClass('active')
+          $('.dropdown:hover').toggleClass('active')
+      })
+      $('.dropdown>a').on('click', function(event){
+        if (event){
+          if (event.prevenDefault){
+            event.prevenDefault();
+          }
+        }
+        return false
       })
     </script>
   </py:def>
