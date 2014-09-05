@@ -206,12 +206,18 @@
         CKAN.GA_Reports.bind_month_selector();
       });
       $('.dropdown').on('click', function(){
+        if $(this).hasClass('open'){
+          $(this).removeClass('open')
+        }
         $('.dropdown.open').toggleClass('open')
         $(this).toggleClass('open')
+        $('.dropdown.active').toggleClass('active')
+        $(this).toggleClass('active')
       })
       $('.dropdown-menu li a').on('click', function(){
         $('.dropdown-menu li.active').toggleClass('active')
         $(this).parent().toggleClass('active')
+        $('.dropdown.open').toggleClass('open')
       })
     </script>
   </py:def>
