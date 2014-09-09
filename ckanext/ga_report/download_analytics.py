@@ -472,14 +472,18 @@ class DownloadAnalytics(object):
                                 filename = re.search('(.files.*)', url)
                                 if filename:
                                     sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
-                                    resource_id = model.Session.execute(sql).first()[0]
-                                    r = q.filter(model.Resource.id == resource_id).first()
+				    resource = model.Session.execute(sql).first()
+				    if resource:
+                                        resource_id = resource[0]
+                                        r = q.filter(model.Resource.id == resource_id).first()
                             if not r:
                                 filename = re.search('(\w+\.\w+$)', url)
                                 if filename:
                                     sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
-                                    resource_id = model.Session.execute(sql).first()[0]
-                                    r = q.filter(model.Resource.id == resource_id).first()
+				    resource = model.Session.execute(sql).first()
+				    if resource:
+                                        resource_id = resource[0]
+                                        r = q.filter(model.Resource.id == resource_id).first()
 
                         package_name = r.resource_group.package.name if r else ""
 
