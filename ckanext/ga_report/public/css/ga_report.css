@@ -88,6 +88,11 @@
 #content .add-nav {
     padding-bottom: 100px;
 }
+@media (max-width: 979px){
+    #content .add-nav {
+        padding-bottom: 80px;
+    }
+}
 #content .dropdown-menu {
     min-width: 100px;
 }
@@ -154,4 +159,11 @@
 #graph-legend-container .rickshaw_legend  span:hover {
     background: none;
     border-radius: 0;
+}
+.site-footer .container, .site-footer .span12{
+    width: auto;
+}
+.site-footer .span2{
+    width: 100%;
+    padding-right: 20px;
 }
