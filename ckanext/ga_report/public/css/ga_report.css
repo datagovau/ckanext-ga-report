@@ -82,8 +82,8 @@
     padding-top: 12px;
     display: block !important;
 }
-#content .add-nav a {
-    padding: 11px 23px;
+#main #content .add-nav li a {
+    padding: 11px 20px;
 }
 #content .add-nav {
     padding-bottom: 100px;
