@@ -139,6 +139,8 @@
                                       opacity: 0;
                                       overflow: hidden;
                                       cursor: pointer;
+                                      left: 0;
+                                      top: 10px;
                                       " onclick=" window.location = '/' ">
                                       Home
                   </div>
@@ -305,7 +307,7 @@
     }
 
     if (navigator.userAgent.indexOf(' MSIE ') > -1) {
-        var par = document.querySelector('.toolbar')
+        var par = document.querySelector('.toolba')
         var sr = document.getElementById('sr-home')
         par.removeChild(sr)
         // sr.style.display = 'none'
