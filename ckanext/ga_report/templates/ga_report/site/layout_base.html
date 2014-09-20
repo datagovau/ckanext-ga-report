@@ -124,13 +124,26 @@
           </div>
         </div>
       </div>
-
-     <ol class="breadcrumb">
-        <li class="home"><a href="/" title="Home" name="main-content"><i class="icon-home"></i></a>
-        </li> 
-        <li> / </li>
-        <li class="active"> <a href="/data/site-usage" title="Statistics">Statistics</a></li>
-    </ol>
+      <div class="toolba">
+              {% block breadcrumb %}
+                {% if self.breadcrumb_content() | trim %}
+                  <ol class="breadcrumb">
+                    {% snippet 'snippets/home_breadcrumb_item.html' %}
+                    {% block breadcrumb_content %}{% endblock %}
+                  </ol>
+                {% endif %}
+              {% endblock %}
+              <div id='sr-home' style="
+                                      position: absolute;
+                                      width: 20px;
+                                      height: 20px;
+                                      opacity: 0;
+                                      overflow: hidden;
+                                      cursor: pointer;
+                                      " onclick=" window.location = '/' ">
+                                      Home
+                  </div>
+            </div>
 
       <div class="row wrapper">
 
@@ -292,6 +305,12 @@
       download.parentElement.insertBefore(newButton, download)
       download.parentElement.removeChild(download);
     }
+    if (navigator.userAgent.indexOf(' MSIE ') > -1) {
+      var par = document.querySelector('.toolbar')
+      var sr = document.getElementById('sr-home')
+      par.removeChild(sr)
+      // sr.style.display = 'none'
+  }
 
 
 
