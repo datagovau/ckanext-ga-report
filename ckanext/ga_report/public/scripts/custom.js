@@ -2,7 +2,7 @@ $(document).ready(function() {
 		    if ($(window).width() <= 979) {
 		        searchmobile();
 
-		        $('.tab-pane').prepend($('<div>').text('Best viewed in landscape').css({'padding':'10px', 'text-align':'center'}))
+		       
 		    }
 
 		     
