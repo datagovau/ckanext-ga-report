@@ -31,7 +31,7 @@
 
 
 <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all')">
-      <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
+      <a class="btn button btn-primary btn-sm " href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
     </py:with>
     
     <div class="row" style="background: #fff;">
