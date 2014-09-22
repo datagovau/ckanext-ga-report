@@ -1,7 +1,19 @@
 $(document).ready(function() {
 		    if ($(window).width() <= 979) {
 		        searchmobile();
+
+		        $('.tab-pane').prepend($('<div>').text('Best viewed in landscape').css({'padding':'10px', 'text-align':'center'}))
 		    }
+
+		     
+
+    
+		    if (!(navigator.userAgent.indexOf(' MSIE ') == -1)) {
+		        var par = document.querySelector('.toolba')
+		        var sr = document.getElementById('sr-home')
+		        par.removeChild(sr)
+	    	}
+
 
 		});
 
