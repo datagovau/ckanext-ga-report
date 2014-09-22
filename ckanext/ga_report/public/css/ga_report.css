@@ -90,11 +90,17 @@
         padding-bottom: 60px;
     }
     .site-footer .container, .site-footer .span12{
-        width: auto;
+        width: 100%;
     }
     .site-footer .span2{
         width: 100%;
         padding-right: 20px;
+    }
+    .powered{
+        margin: 0;
+    }
+    footer.site-footer div.container .span12{
+        margin-bottom: 9px;
     }
 }
 #content .dropdown-menu {
