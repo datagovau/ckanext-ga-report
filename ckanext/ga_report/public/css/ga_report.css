@@ -154,7 +154,7 @@
         margin-bottom: 23px;
     }
     #content .tabbable li.open a {
-        margin: 0;
+        margin-bottom: 23px;
     }
     #content .nav-tabs ul.dropdown-menu{
       border-radius: 0;
