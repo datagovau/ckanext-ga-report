@@ -270,3 +270,6 @@ table.ga-reports-table {
     border-top: none!important;
     border-bottom: 1px solid #ddd;
 }
+.external_link_span{
+    margin-left: -130px;
+}
