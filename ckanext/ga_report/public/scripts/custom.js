@@ -1,4 +1,44 @@
 $(document).ready(function() {
+			String.prototype.endsWith = function(suffix) {
+			    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+			};
+			if (window.location.pathname.endsWith('site-usage')) {
+				var target = $('#legend_none')
+				$(target).css('display', 'block').addClass('current').html('<h4 style="padding:15px;">This tab does not need the legend</h4>')
+				$('a[data-toggle="tab"]').live('click', function(){
+					var pane = $(this).attr('data-hash').replace('_','-')
+					switch (pane){
+						case 'browsers-names':
+						pane = 'browsers';
+						break;
+						case 'browsers-versions':
+						pane = 'browser-versions';
+						break;
+						case 'os-versions':
+						pane = 'os_versions';
+						break;
+						case 'social-networks':
+						pane = 'social_networks';
+						break;
+						case 'os':
+						case 'languages':
+						case 'country':
+						break;
+						default:
+						pane = false;
+						break;
+
+					}
+					$('div.rickshaw_legend.current, #legend_none').css('display', 'none')
+					if (pane){
+						var target = $('#legend_'+pane)
+						$(target).css('display', 'block').addClass('current')
+					} else {
+						var target = $('#legend_none')
+						$(target).css('display', 'block').addClass('current')
+					}
+				})
+			}
 		    if ($(window).width() <= 979) {
 		        searchmobile();
 

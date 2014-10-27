@@ -26,6 +26,7 @@ CKAN.GA_Reports.render_rickshaw = function( css_name, data, mode, colorscheme ) 
       cap_name = cap_name.slice(0,2).toUpperCase() + cap_name.slice(2)
     }
     var h2 = $('<h2 class="module-heading">').text(cap_name)
+    $(h2).addClass('legend_' + css_name)
     h2.appendTo(graphLegends);
     var myLegend = $('<div id="legend_'+css_name+'"/>').appendTo(graphLegends);
 
