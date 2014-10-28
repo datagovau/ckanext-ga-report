@@ -452,7 +452,7 @@ class DownloadAnalytics(object):
                 progress_count += 1
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d done so far', progress_count, progress_total)
-                if 'linktext=download' in result[0] or 'linktext=order resource' in result[0]:
+                if 'linktext=download' in result[0] or 'linktext=order resource' in result[0] or 'linktext=view data tool/api' in result[0]:
                     linkhref = re.search('linkhref(=.*data.vic.gov.au|=.*links.com.au|=)(.*?)&linkdivid',result[0].strip())
                     if linkhref:
                         url = linkhref.group(2)
@@ -465,25 +465,23 @@ class DownloadAnalytics(object):
                             r = q.filter(model.Resource.url.ilike("%%%s%%" % url)).first()
 
                         # new style internal download links
-                        if re.search('(?:/resource/)(.*)(?:/download/)', url):
-                            resource_id = re.search('(?:/resource/)(.*)(?:/download/)', url)
-                            r = q.filter(model.Resource.id.ilike("%s%%" % resource_id.group(1))).first()
+                        if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
+                            resource_id = re.search('(?:\/resource\/)(.*)(?:\/download\/)', url)
+                            r = q.filter(model.Resource.id == resource_id.group(1)).first()
                             if not r:
                                 filename = re.search('(.files.*)', url)
                                 if filename:
-                                    sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
-				    resource = model.Session.execute(sql).first()
-				    if resource:
-                                        resource_id = resource[0]
-                                        r = q.filter(model.Resource.id == resource_id).first()
+                                    sql = "SELECT distinct id FROM public.resource_revision t " \
+                                          "WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
+                                    resource_id = model.Session.execute(sql).first()[0]
+                                    r = q.filter(model.Resource.id == resource_id).first()
                             if not r:
                                 filename = re.search('(\w+\.\w+$)', url)
                                 if filename:
-                                    sql = "SELECT id FROM public.resource t WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
-				    resource = model.Session.execute(sql).first()
-				    if resource:
-                                        resource_id = resource[0]
-                                        r = q.filter(model.Resource.id == resource_id).first()
+                                    sql = "SELECT distinct id FROM public.resource_revision t " \
+                                          "WHERE replace(url,'-','') ilike '%"+filename.group(1)+"%'"
+                                    resource_id = model.Session.execute(sql).first()[0]
+                                    r = q.filter(model.Resource.id == resource_id).first()
 
                         package_name = r.resource_group.package.name if r else ""
 
