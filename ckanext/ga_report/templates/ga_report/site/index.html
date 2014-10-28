@@ -9,7 +9,7 @@
 
   <py:def function="optional_head">
       <link rel="stylesheet" type="text/css" href="/data/scripts/vendor/rickshaw.min.css"/>
-      <link rel="stylesheet" type="text/css" href="/css/ga_report.css?1"/>
+      <link rel="stylesheet" type="text/css" href="/data/css/ga_report.css?1"/>
       <script type="text/javascript" src="/data/scripts/modernizr-2.6.2.custom.js"></script>
       <script type="text/javascript" src="/data/scripts/ckanext_ga_reports.js?1"></script>
       <script type="text/javascript" src="/data/scripts/vendor/jquery.sparkline.modified.js"></script>
@@ -17,6 +17,7 @@
       <script type="text/javascript" src="/data/scripts/vendor/d3.v2.js"></script>
       <script type="text/javascript" src="/data/scripts/vendor/d3.layout.min.js"></script>
       <script type="text/javascript" src="/data/scripts/vendor/rickshaw.min.js"></script>
+      <script type="text/javascript" src="/data/scripts/custom.js"></script>
   </py:def>
 
  <py:match path="breadcrumbs">
@@ -25,17 +26,17 @@
   </py:match>
 
   <div py:match="content">
-    <div class="">
+    <div class="row">
       <div class="col-sm-7 col-md-8 col-lg-9">
         <h1>Site Usage</h1>
       </div>
 
     </div>
 
-    <div class="" style="background: #fff;">
+    <div class="row" style="background: #fff;">
       <div class="col-md-8">
         <div class="whitebox">
-          <div class="tabbable site-usage">
+          <div class="tabbable">
             <ul class="nav nav-tabs">
               <li class="active"><a href="#totals" data-hash="totals" data-toggle="tab">Totals</a></li>
               <li class="dropdown">
@@ -67,10 +68,11 @@
             </ul>
             <div>
         <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all')">
-          <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
+          <a class="btn button btn-primary btn-sm " href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
         </py:with>
       </div>
             <div class="tab-content">
+              <div class='better-viewed' style="padding: 10px; text-align: center;">Best viewed in landscape</div>
               <div class="tab-pane active" id="totals">
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
@@ -95,6 +97,7 @@
                       </py:for>
                      </table>
               </div>
+              
                <div class="tab-pane" id="browsers_versions">
                    ${rickshaw_graph(c.browser_versions_graph,'browser-versions',mode='stack')}
                    <hr/>

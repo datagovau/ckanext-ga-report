@@ -12,12 +12,11 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-  <title>${page_title()} | ${g.site_title}</title>
+  <title>${page_title()} | Victorian Government Data Directory</title>
   <meta name="description" content="" />
   <meta name="author" content="" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" href="${h.url_for_static(g.favicon)}" />
 
   <py:choose>
   <py:when test="defined('optional_feed')">
@@ -45,6 +44,7 @@
   <link rel="stylesheet" href="/styles/select2.css"/>
   <link rel="stylesheet" href="${h.include_resource('ckanext-datavic/styles/main.css')}"/>
   <link rel="stylesheet" href="/styles/new.css"/>
+  <link rel="shortcut icon" href="/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon"/>
 </head>
 
 <body class="${request.environ.get('pylons.routes_dict', {}).get('action')}
@@ -53,7 +53,7 @@
   "><div id="skip-link"> 
     <a tabindex="0" href="#main-content" class="element-invisible element-focusable">Skip to main content</a> 
   </div> 
-
+<div id='data-wrapper'>
     <header class="navbar navbar-static-top masthead">
         <div class="container header-area">
             <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar collapsed" type="button">
@@ -64,7 +64,7 @@
             <div class="logo-holder">
 
               <a href="/home">
-                <img src="/images/logo.png" alt="data.vic.gov.au"  width="138" height="54"></img>
+                <img src="/images/logo-new-hq.png" alt="data.vic.gov.au"  width="138" height="54"></img>
               </a>
               <a href="http://www.vic.gov.au/">
                 <img src="/images/victoria-logo-small.png" alt="State Government Victoria"  width="62" height="36"></img>
@@ -74,20 +74,17 @@
 
 
                 <nav class="section navigation">
-                    <ul class="nav nav-pills">
-
-                        <li><a href="/" class="active">HOME</a>
-                        </li>
-                        <li><a href="/data/dataset" title="">DATA</a>
-                        </li>
-                        <li><a href="/suggest_a_dataset" title="">SUGGEST DATASET</a>
-                        </li>
-                        <li id="stats-nav"  class="active"><a href="/data/stats" title="">STATISTICS</a>
-                        </li>
-                        <li><a href="/blogs" title="">BLOG</a>
-                        </li>
-                    </ul>
-                </nav>
+                <ul class="nav nav-pills">
+                    
+                    <li><a href="/" class="active">HOME</a></li>
+                    <li ><a href="/data/dataset" title="">DATA</a></li>
+                    <li><a href="/suggest_a_dataset" title="">SUGGEST DATASET</a></li>
+                    <li><a href="/showcase" title="">SHOWCASE</a></li>
+                    <li ><a href="http://nationalmap.gov.au/vic" id="external_menu_map">MAP</a><span class="external_link_span">Go to the external National Map<br /> Service Website</span></li>
+                    <li id='blog-nav'><a href="/blogs" title="">BLOG</a></li>
+                    <li id='stats-nav' class="active"><a href="/data/stats" title="">STATS</a></li>
+                </ul>
+            </nav>
             </div>
         </div>
 
@@ -128,14 +125,26 @@
           </div>
         </div>
       </div>
+<div class="toolba">
 
      <ol class="breadcrumb">
         <li class="home"><a href="/" title="Home" name="main-content"><i class="icon-home"></i></a>
         </li> 
         <li> / </li>
-        <li class="active"> Statistics</li>
+        <li class="active"> <a href="/data/site-usage" title="Statistics">Statistics</a></li>
     </ol>
-
+ <div id='sr-home' style="
+                                      position: absolute;
+                                      width: 20px;
+                                      height: 20px;
+                                      opacity: 0;
+                                      overflow: hidden;
+                                      cursor: pointer;
+                                      top: 10px;
+                                      " onclick=" window.location = '/' ">
+                                      Home
+                  </div>
+                </div>
       <div class="row wrapper">
 
         <div class="primary span9">
@@ -188,21 +197,9 @@
   <footer class="site-footer">
   <div class="container">
     
-        <nav class="footer-links">
-            
+        <nav class="footer-links">            
             <div class="row">
                 <div class="span12">
-                    
-                    <div class="powered">
-                        <span>Powered by</span>
-                        <a href="http://ckan.org/">
-                            <img src="/images/ckan-logo-footer-black.png" alt="CKAN" width="68" height="20"></img>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="span10">
                     <ul class="list">
                         <li><a href="/about-us">About Us</a>
                         </li>
@@ -214,17 +211,54 @@
                         </li>
                         <li><a href="/policy-and-standards">Policy and Standards</a>
                         </li>
+                        <li><a href="/accessibility">Accessibility</a>
+                        </li>
                         <li><a href="/contact">Contact</a>
                         </li>
                     </ul>
+                     <div id="items-left">
+                            <div class="item-list">
+                                <ul class="footer-mobile">
+                                    <li class="first"><a href="/about-us">About Us</a>
+                                    </li>
+                                    <li><a href="/terms-of-use">Terms of Use</a>
+                                    </li>
+                                    <li><a href="/privacy">Privacy</a>
+                                    </li>
+                                    <li class="last"><a href="/copyright-and-attribution">Copyright and Attribution</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="item-list">
+                            <ul class="footer-mobile">
+                                <li class="first"><a href="/policy-and-standards">Policy and Standards</a>
+                                </li>
+                                <li><a href="/accessibility">Accessibility</a>
+                                </li>
+                                <li class="last"><a href="/contact">Contact</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                </div>
+                
+            </div>
+            <div class="row">
+                <div class="span10">
+                    <div class="powered">
+                        <span>Powered by</span>
+                        <a href="http://ckan.org/">
+                            <img src="/images/ckan-logo-footer-black.png" alt="CKAN" width="68" height="20" />
+                        </a>
+                    </div>
                 </div>
                 <div class="span2">
                     <a href="http://www.vic.gov.au/">
-                        <img src="/images/victoria-logo.png" alt="State Government Victoria" width="103" height="59" class="alignright"></img>
+                        <img src="/images/victoria-logo.png" alt="State Government Victoria" width="103" height="59" class="alignright" />
                     </a>
                 </div>
             </div>
-            
         </nav>
         
   </div>  
@@ -254,6 +288,8 @@
   <script type="text/javascript" src="${h.url_for_static('/scripts/templates.js')}"></script>
 
   <script type="text/javascript">
+
+
     CKAN.plugins = [
       // Declare js array from Python string
       ${['\'%s\', '%s  for s in config.get('ckan.plugins','').split(' ')]}
@@ -268,14 +304,16 @@
     CKAN.SITE_URL = CKAN.SITE_URL.replace(/\/$/, '');
     CKAN.SITE_URL_NO_LOCALE = CKAN.SITE_URL_NO_LOCALE.replace(/\/$/, '');
     $(document).ready(function() {
+       
+
         var ckan_user = '${c.user}';
         if (ckan_user) {
             $(".ckan-logged-out").hide();
             $(".ckan-logged-in").show();
         }
-        // $('input[placeholder], textarea[placeholder]').placeholder();
-
-		// $(".chzn-select").chosen();
+          $('input[placeholder], textarea[placeholder]').placeholder();
+       
+		$(".chzn-select").chosen();
     });
 
     if (document.querySelector('.tabbable .nav.nav-tabs')) document.querySelector('.tabbable .nav.nav-tabs').setAttribute('class', 'add-nav')
@@ -291,6 +329,10 @@
       download.parentElement.insertBefore(newButton, download)
       download.parentElement.removeChild(download);
     }
+
+
+   
+
     
   </script>
 
@@ -304,6 +346,7 @@
   </py:if>
 
 ${h.literal(getattr(g, 'template_footer_end', ''))}
+</div>
 </body>
 </html>
 
