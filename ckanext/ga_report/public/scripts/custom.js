@@ -4,8 +4,8 @@ $(document).ready(function() {
 			};
 			if (window.location.pathname.endsWith('site-usage')) {
 				var target = $('#legend_none')
-				$(target).css('display', 'block').addClass('current').html('<h4 style="padding:15px;">This tab does not need the legend</h4>')
-				$('a[data-toggle="tab"]').live('click', function(){
+				$(target).css('display', 'block').addClass('current').html('')
+				$(document).on('click', 'a[data-toggle="tab"]', function(){
 					var pane = $(this).attr('data-hash').replace('_','-')
 					switch (pane){
 						case 'browsers-names':
