@@ -27,7 +27,7 @@
 
   <div py:match="content">
     
-    <h1>Site Usage<small>Publishers</small></h1>
+    <h1>Site Usage <small>Publishers</small></h1>
 
 
 <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all')">
@@ -48,6 +48,7 @@
           <div class="controls">
             <h2 class="ga-reports-heading">Statistics for</h2>
               ${month_selector(c.month, c.months, c.day)}
+              <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
           </div>
        </form>
 
