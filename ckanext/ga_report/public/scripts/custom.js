@@ -2,6 +2,17 @@ $(document).ready(function() {
 			String.prototype.endsWith = function(suffix) {
 			    return this.indexOf(suffix, this.length - suffix.length) !== -1;
 			};
+			window.gaReportCheckCurrentTab = function(){
+				var reqParams = window.location.search.slice(1).split('&')
+				if ( reqParams.length ) {
+					for (param in reqParams ){
+						var eqPos = reqParams[param].indexOf('=')
+						if ( eqPos !== -1 && eqPos < reqParams[param].length -1 && reqParams[param].slice(0, eqPos) === 'current' ) {
+								document.querySelector('a[href="#'+(reqParams[param].slice(eqPos+1))+'"]').click()
+						}
+					}
+				}
+			}
 			if (window.location.pathname.endsWith('site-usage')) {
 				var target = $('#legend_none')
 				$(target).css('display', 'block').addClass('current').html('')

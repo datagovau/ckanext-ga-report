@@ -312,6 +312,9 @@
             $(".ckan-logged-out").hide();
             $(".ckan-logged-in").show();
         }
+        <py:if test="defined('check_current_tab')">
+          ${check_current_tab()}
+        </py:if>
           $('input[placeholder], textarea[placeholder]').placeholder();
        
 		$(".chzn-select").chosen();

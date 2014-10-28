@@ -17,6 +17,7 @@
       <script type="text/javascript" src="/data/scripts/vendor/d3.v2.js"></script>
       <script type="text/javascript" src="/data/scripts/vendor/d3.layout.min.js"></script>
       <script type="text/javascript" src="/data/scripts/vendor/rickshaw.min.js"></script>
+
   </py:def>
 
  <py:match path="breadcrumbs">
@@ -76,6 +77,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='totals' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                    <table class="ga-reports-table table table-condensed table-bordered table-striped">
                      <tr>
@@ -104,6 +107,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='browsers_versions' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.browser_versions)}
@@ -114,6 +119,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='browsers_names' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.browsers)}
@@ -124,6 +131,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='os' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.os)}
@@ -134,6 +143,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='os_versions' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.os_versions)}
@@ -143,6 +154,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='social_referrals_totals' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                   ${social_table(c.social_referrer_totals)}
               </div>
@@ -153,6 +166,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='social_networks' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.social_networks, 'Visits')}
@@ -163,6 +178,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='languages' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.languages)}
@@ -173,6 +190,8 @@
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
                      ${month_selector(c.month, c.months, c.day)}
+                     <input type='hidden' name='current' class='tab-holder-hidden' value='country' />
+                     <input class="btn button btn-primary btn-xs" type='submit' value="Update"/>
                    </form>
                 <hr/>
                    ${stat_table(c.country)}
@@ -215,7 +234,9 @@
       $('.dropdown > a').on('click', function(){return false;})
     </script>
   </py:def>
-
+  <py:def function="check_current_tab">
+    gaReportCheckCurrentTab();
+  </py:def>
   <xi:include href="layout.html" />
 </html>
 
