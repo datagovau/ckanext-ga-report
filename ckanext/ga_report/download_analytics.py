@@ -427,7 +427,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["filters"] = 'ga:eventAction==download,ga:eventAction==internal'
+            args["filters"] = 'ga:eventAction==download,ga:eventAction==internal,ga:eventAction==outbound'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
             args["alt"] = "json"
@@ -452,7 +452,7 @@ class DownloadAnalytics(object):
                 progress_count += 1
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d done so far', progress_count, progress_total)
-                if 'linktext=download' in result[0] or 'linktext=order resource' in result[0] or 'linktext=view data tool/api' in result[0]:
+                if 'linktext=download' in result[0] or 'linktext=order resource' in result[0] or 'linktext=view data tool' in result[0]:
                     linkhref = re.search('linkhref(=.*data.vic.gov.au|=.*links.com.au|=)(.*?)&linkdivid',result[0].strip())
                     if linkhref:
                         url = linkhref.group(2)
