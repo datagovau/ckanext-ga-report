@@ -11,14 +11,11 @@ from pylons import config
 from ga_model import _normalize_url
 import ga_model
 
-#from ga_client import GA
+# from ga_client import GA
 
 log = logging.getLogger('ckanext.ga-report')
 
 FORMAT_MONTH = '%Y-%m'
-MIN_VIEWS = 50
-MIN_VISITS = 20
-MIN_DOWNLOADS = 10
 
 class DownloadAnalytics(object):
     '''Downloads and stores analytics info'''
@@ -37,7 +34,7 @@ class DownloadAnalytics(object):
 
         first_of_this_month = datetime.datetime(date.year, date.month, 1)
         _, last_day_of_month = calendar.monthrange(int(date.year), int(date.month))
-        last_of_this_month =  datetime.datetime(date.year, date.month, last_day_of_month)
+        last_of_this_month = datetime.datetime(date.year, date.month, last_day_of_month)
         # if this is the latest month, note that it is only up until today
         now = datetime.datetime.now()
         if now.year == date.year and now.month == date.month:
@@ -64,7 +61,7 @@ class DownloadAnalytics(object):
 
     def for_date(self, for_date):
         assert isinstance(since_date, datetime.datetime)
-        periods = [] # (period_name, period_complete_day, start_date, end_date)
+        periods = []  # (period_name, period_complete_day, start_date, end_date)
         if self.period == 'monthly':
             first_of_the_months_until_now = []
             year = for_date.year
@@ -81,8 +78,8 @@ class DownloadAnalytics(object):
                 elif first_of_the_month < first_of_this_month:
                     in_the_next_month = first_of_the_month + datetime.timedelta(40)
                     last_of_the_month = datetime.datetime(in_the_next_month.year,
-                                                           in_the_next_month.month, 1)\
-                                                           - datetime.timedelta(1)
+                                                          in_the_next_month.month, 1) \
+                                        - datetime.timedelta(1)
                     periods.append((now.strftime(FORMAT_MONTH), 0,
                                     first_of_the_month, last_of_the_month))
                 else:
@@ -132,17 +129,16 @@ class DownloadAnalytics(object):
                 data = self.download(start_date, end_date, '~^/organization/[a-z0-9-_]+')
 
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
-                self.store(period_name, period_complete_day, data,)
+                self.store(period_name, period_complete_day, data, )
 
                 # Make sure the All records are correct.
                 ga_model.post_update_url_stats()
 
                 log.info('Associating datasets with their publisher')
-                ga_model.update_publisher_stats(period_name) # about 30 seconds.
-
+                ga_model.update_publisher_stats(period_name)  # about 30 seconds.
 
             log.info('Downloading and storing analytics for site-wide stats')
-            self.sitewide_stats( period_name, period_complete_day )
+            self.sitewide_stats(period_name, period_complete_day)
 
             log.info('Downloading and storing analytics for social networks')
             self.update_social_info(period_name, start_date, end_date)
@@ -161,11 +157,11 @@ class DownloadAnalytics(object):
             headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
-                       filters=query,
-                       metrics=metrics,
-                       sort=sort,
-                       dimensions="ga:landingPagePath,ga:socialNetwork",
-                       max_results=10000)
+                        filters=query,
+                        metrics=metrics,
+                        sort=sort,
+                        dimensions="ga:landingPagePath,ga:socialNetwork",
+                        max_results=10000)
 
             args['start-date'] = start_date
             args['end-date'] = end_date
@@ -175,12 +171,11 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
-
         data = collections.defaultdict(list)
-        rows = results.get('rows',[])
+        rows = results.get('rows', [])
         for row in rows:
             url = row[0]
-            data[url].append( (row[1], int(row[2]),) )
+            data[url].append((row[1], int(row[2]),))
         ga_model.update_social(period_name, data)
 
 
@@ -194,7 +189,7 @@ class DownloadAnalytics(object):
 
         # Supported query params at
         # https://developers.google.com/analytics/devguides/reporting/core/v3/reference
-	# https://ga-dev-tools.appspot.com/explorer/
+        # https://ga-dev-tools.appspot.com/explorer/
         try:
             args = {}
             args["sort"] = "-ga:pageviews"
@@ -215,18 +210,18 @@ class DownloadAnalytics(object):
 
         packages = []
         log.info("There are %d results" % results['totalResults'])
-	if results['totalResults'] > 0:
-          for entry in results.get('rows'):
-            (loc,pageviews,visits) = entry
-            #url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
-            url = loc
-	    #print url
-            if not url.startswith('/dataset/') and not url.startswith('/organization/'):
-                # filter out strays like:
-                # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
-                # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
-                continue
-            packages.append( (url, pageviews, visits,) ) # Temporary hack
+        if results['totalResults'] > 0:
+            for entry in results.get('rows'):
+                (loc, pageviews, visits) = entry
+                # url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
+                url = loc
+                #print url
+                if not url.startswith('/dataset/') and not url.startswith('/organization/'):
+                    # filter out strays like:
+                    # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
+                    # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
+                    continue
+                packages.append((url, pageviews, visits,))  # Temporary hack
         return dict(url=packages)
 
     def store(self, period_name, period_complete_day, data):
@@ -235,6 +230,7 @@ class DownloadAnalytics(object):
 
     def sitewide_stats(self, period_name, period_complete_day):
         import calendar
+
         year, month = period_name.split('-')
         _, last_day_of_month = calendar.monthrange(int(year), int(month))
 
@@ -250,19 +246,20 @@ class DownloadAnalytics(object):
         data = {}
         for result in result_data:
             key = f(result)
-            data[key] = data.get(key,0) + result[1]
+            data[key] = data.get(key, 0) + result[1]
         return data
 
     def _get_json(self, params, prev_fail=False):
         ga_token_filepath = os.path.expanduser(config.get('googleanalytics.token.filepath', ''))
         if not ga_token_filepath:
             print 'ERROR: In the CKAN config you need to specify the filepath of the ' \
-                'Google Analytics token file under key: googleanalytics.token.filepath'
+                  'Google Analytics token file under key: googleanalytics.token.filepath'
             return
 
         log.info("Trying to refresh our OAuth token")
         try:
             from ga_auth import init_service
+
             self.token, svc = init_service(ga_token_filepath, None)
             log.info("OAuth token refreshed")
         except Exception, auth_exception:
@@ -280,7 +277,7 @@ class DownloadAnalytics(object):
 
             return json.loads(r.content)
         except Exception, e:
-              log.exception(e)
+            log.exception(e)
 
         return dict(url=[])
 
@@ -304,7 +301,7 @@ class DownloadAnalytics(object):
 
         result_data = results.get('rows')
         ga_model.update_sitewide_stats(period_name, "Totals", {'Total page views': result_data[0][0]},
-            period_complete_day)
+                                       period_complete_day)
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -335,7 +332,7 @@ class DownloadAnalytics(object):
         ga_model.update_sitewide_stats(period_name, "Totals", data, period_complete_day)
 
         # Bounces from / or another configurable page.
-        path = '/' #% (config.get('googleanalytics.account'),                          config.get('ga-report.bounce_url', '/'))
+        path = '/'  # % (config.get('googleanalytics.account'),                          config.get('ga-report.bounce_url', '/'))
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -368,7 +365,7 @@ class DownloadAnalytics(object):
         # visitBounceRate is already a %
         log.info('Google reports visitBounceRate as %s', bounces)
         ga_model.update_sitewide_stats(period_name, "Totals", {'Bounce rate (home page)': float(bounces)},
-            period_complete_day)
+                                       period_complete_day)
 
 
     def _locale_stats(self, start_date, end_date, period_name, period_complete_day):
@@ -399,13 +396,11 @@ class DownloadAnalytics(object):
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Languages", data, period_complete_day)
 
         data = {}
         for result in result_data:
             data[result[1]] = data.get(result[1], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Country", data, period_complete_day)
 
 
@@ -457,17 +452,40 @@ class DownloadAnalytics(object):
                 # Get package id associated with the resource that has this URL.
                 q = model.Session.query(model.Resource)
                 if cached:
-                    r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
+                    r = q.filter(model.ResourceRevision.cache_url.like("%s%%" % url)).first()
                 else:
-                    r = q.filter(model.Resource.url.like("%s%%" % url)).first()
-		
-		# new style internal download links
-		if re.search('(?:/resource/)(.*)(?:/download/)',url):
-		    resource_id = re.search('(?:/resource/)(.*)(?:/download/)',url)
-                    r = q.filter(model.Resource.id.like("%s%%" % resource_id.group(1))).first()
+                    r = q.filter(model.ResourceRevision.url.like("%s%%" % url)).first()
+
+                # new style internal download links
+                if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
+                    resource_id = re.search('(?:\/resource\/)(.*)(?:\/download\/)', url)
+                    r = q.filter(model.Resource.id == resource_id.group(1)).first()
+                    if not r:
+                        filename = re.search('download\/(.*)', url)
+                        if filename:
+                            sql = "SELECT distinct id FROM public.resource t " \
+                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource_revision t " \
+                                    "WHERE url ilike '%" + filename.group(
+                                1) + "%'"
+                            res = model.Session.execute(sql).first()
+                            if res:
+                                resource_id = res[0]
+                                r = q.filter(model.Resource.id == resource_id).first()
+                    if not r:
+                        filename = re.search('(\w+\.\w+$)', url)
+                        if filename:
+                            sql = "SELECT distinct id FROM public.resource_revision t " \
+                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource_revision t " \
+                                    "WHERE url ilike '%" + filename.group(
+                                1) + "%'"
+                            res = model.Session.execute(sql).first()
+                            if res:
+                                resource_id = res[0]
+                                r = q.filter(model.Resource.id == resource_id).first()
 
                 package_name = r.resource_group.package.name if r else ""
-
 
                 if package_name:
                     data[package_name] = data.get(package_name, 0) + int(result[1])
@@ -481,29 +499,6 @@ class DownloadAnalytics(object):
         log.info('Associating downloads of resource URLs with their respective datasets')
         process_result_data(results.get('rows'))
 
-        '''try:
-            # Because of issues of invalid responses, we are going to make these requests
-            # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
-
-            args = dict( ids='ga:' + self.profile_id,
-                         filters='ga:eventAction==download-cache',
-                         metrics='ga:totalEvents',
-                         sort='-ga:totalEvents',
-                         dimensions="ga:eventLabel",
-                         max_results=10000)
-            args['start-date'] = start_date
-            args['end-date'] = end_date
-
-            results = self._get_json(args)
-        except Exception, e:
-            log.exception(e)
-            results = dict(url=[])
-
-        log.info('Associating downloads of cache resource URLs with their respective datasets')
-        process_result_data(results.get('rows'), cached=False)'''
-
-        self._filter_out_long_tail(data, MIN_DOWNLOADS)
         ga_model.update_sitewide_stats(period_name, "Downloads", data, period_complete_day)
 
     def _social_stats(self, start_date, end_date, period_name, period_complete_day):
@@ -514,11 +509,11 @@ class DownloadAnalytics(object):
             # ourselves.
             headers = {'authorization': 'Bearer ' + self.token}
 
-            args = dict( ids='ga:' + self.profile_id,
-                         metrics='ga:pageviews',
-                         sort='-ga:pageviews',
-                         dimensions="ga:socialNetwork,ga:referralPath",
-                         max_results=10000)
+            args = dict(ids='ga:' + self.profile_id,
+                        metrics='ga:pageviews',
+                        sort='-ga:pageviews',
+                        dimensions="ga:socialNetwork,ga:referralPath",
+                        max_results=10000)
             args['start-date'] = start_date
             args['end-date'] = end_date
 
@@ -532,7 +527,6 @@ class DownloadAnalytics(object):
         for result in result_data:
             if not result[0] == '(not set)':
                 data[result[0]] = data.get(result[0], 0) + int(result[2])
-        self._filter_out_long_tail(data, 3)
         ga_model.update_sitewide_stats(period_name, "Social sources", data, period_complete_day)
 
 
@@ -543,11 +537,11 @@ class DownloadAnalytics(object):
             # ourselves.
             headers = {'authorization': 'Bearer ' + self.token}
 
-            args = dict( ids='ga:' + self.profile_id,
-                         metrics='ga:pageviews',
-                         sort='-ga:pageviews',
-                         dimensions="ga:operatingSystem,ga:operatingSystemVersion",
-                         max_results=10000)
+            args = dict(ids='ga:' + self.profile_id,
+                        metrics='ga:pageviews',
+                        sort='-ga:pageviews',
+                        dimensions="ga:operatingSystem,ga:operatingSystemVersion",
+                        max_results=10000)
             args['start-date'] = start_date
             args['end-date'] = end_date
 
@@ -560,14 +554,12 @@ class DownloadAnalytics(object):
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Operating Systems", data, period_complete_day)
 
         data = {}
         for result in result_data:
-            if int(result[2]) >= MIN_VIEWS:
-                key = "%s %s" % (result[0],result[1])
-                data[key] = result[2]
+            key = "%s %s" % (result[0], result[1])
+            data[key] = result[2]
         ga_model.update_sitewide_stats(period_name, "Operating Systems versions", data, period_complete_day)
 
 
@@ -579,11 +571,11 @@ class DownloadAnalytics(object):
             # ourselves.
             headers = {'authorization': 'Bearer ' + self.token}
 
-            args = dict( ids='ga:' + self.profile_id,
-                         metrics='ga:pageviews',
-                         sort='-ga:pageviews',
-                         dimensions="ga:browser,ga:browserVersion",
-                         max_results=10000)
+            args = dict(ids='ga:' + self.profile_id,
+                        metrics='ga:pageviews',
+                        sort='-ga:pageviews',
+                        dimensions="ga:browser,ga:browserVersion",
+                        max_results=10000)
 
             args['start-date'] = start_date
             args['end-date'] = end_date
@@ -593,21 +585,18 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
-
         result_data = results.get('rows')
         # e.g. [u'Firefox', u'19.0', u'20']
 
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Browsers", data, period_complete_day)
 
         data = {}
         for result in result_data:
             key = "%s %s" % (result[0], self._filter_browser_version(result[0], result[1]))
             data[key] = data.get(key, 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Browser versions", data, period_complete_day)
 
     @classmethod
@@ -640,11 +629,11 @@ class DownloadAnalytics(object):
             # ourselves.
             headers = {'authorization': 'Bearer ' + self.token}
 
-            args = dict( ids='ga:' + self.profile_id,
-                         metrics='ga:pageviews',
-                         sort='-ga:pageviews',
-                         dimensions="ga:mobileDeviceBranding, ga:mobileDeviceInfo",
-                         max_results=10000)
+            args = dict(ids='ga:' + self.profile_id,
+                        metrics='ga:pageviews',
+                        sort='-ga:pageviews',
+                        dimensions="ga:mobileDeviceBranding, ga:mobileDeviceInfo",
+                        max_results=10000)
             args['start-date'] = start_date
             args['end-date'] = end_date
 
@@ -653,27 +642,13 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
-
         result_data = results.get('rows')
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Mobile brands", data, period_complete_day)
 
         data = {}
         for result in result_data:
             data[result[1]] = data.get(result[1], 0) + int(result[2])
-        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
-
-    @classmethod
-    def _filter_out_long_tail(cls, data, threshold=10):
-        '''
-        Given data which is a frequency distribution, filter out
-        results which are below a threshold count. This is good to protect
-        privacy.
-        '''
-        for key, value in data.items():
-            if value < threshold:
-                del data[key]
