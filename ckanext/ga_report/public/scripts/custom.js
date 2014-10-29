@@ -2,10 +2,21 @@ $(document).ready(function() {
 			String.prototype.endsWith = function(suffix) {
 			    return this.indexOf(suffix, this.length - suffix.length) !== -1;
 			};
+			window.gaReportCheckCurrentTab = function(){
+				var reqParams = window.location.search.slice(1).split('&')
+				if ( reqParams.length ) {
+					for (param in reqParams ){
+						var eqPos = reqParams[param].indexOf('=')
+						if ( eqPos !== -1 && eqPos < reqParams[param].length -1 && reqParams[param].slice(0, eqPos) === 'current' ) {
+								document.querySelector('a[href="#'+(reqParams[param].slice(eqPos+1))+'"]').click()
+						}
+					}
+				}
+			}
 			if (window.location.pathname.endsWith('site-usage')) {
 				var target = $('#legend_none')
-				$(target).css('display', 'block').addClass('current').html('<h4 style="padding:15px;">This tab does not need the legend</h4>')
-				$('a[data-toggle="tab"]').live('click', function(){
+				$(target).css('display', 'block').addClass('current').html('')
+				$(document).on('click', 'a[data-toggle="tab"]', function(){
 					var pane = $(this).attr('data-hash').replace('_','-')
 					switch (pane){
 						case 'browsers-names':
