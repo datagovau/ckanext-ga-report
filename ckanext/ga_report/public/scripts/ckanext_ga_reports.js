@@ -55,7 +55,7 @@ CKAN.GA_Reports.render_rickshaw = function( css_name, data, mode, colorscheme ) 
       graph: graph,
       legend: legend
     } );
-    myLegend.prepend('<div class="instructions">Click on a series below to isolate its graph:</div>');
+    myLegend.prepend('<div class="instructions">Click on a series below to isolate its graph:</div><span class="visually-hidden"> Clicking on the below links will update the graph data in the main content area.</span>');
     graph.render();
 };
 

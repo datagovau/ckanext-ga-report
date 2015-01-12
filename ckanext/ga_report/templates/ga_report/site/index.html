@@ -72,7 +72,7 @@
             <div class="tab-content">
               <div class="tab-pane active" id="totals">
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                    <table class="ga-reports-table table table-condensed table-bordered table-striped">
@@ -99,7 +99,7 @@
                    <hr/>
                    <p>Note: Where a browser has a large number of versions, these have been grouped together.</p>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -109,7 +109,7 @@
                    ${rickshaw_graph(c.browsers_graph,'browsers',mode='stack')}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -119,7 +119,7 @@
                    ${rickshaw_graph(c.os_graph,'os',mode='stack')}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -129,7 +129,7 @@
                    ${rickshaw_graph(c.os_versions_graph,'os_versions',mode='stack')}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -138,7 +138,7 @@
               <div class="tab-pane" id="social_referrals_totals">
                   <p>Number of visits that were referred from social networks</p>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                   ${social_table(c.social_referrer_totals)}
@@ -148,7 +148,7 @@
                    <hr/>
                   <p>Percentage of visits that were referred from these social networks</p>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -158,7 +158,7 @@
                    ${rickshaw_graph(c.languages_graph,'languages',mode='stack')}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
@@ -168,7 +168,7 @@
                    ${rickshaw_graph(c.country_graph,'country',mode='stack')}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
-                     <h4 class="ga-reports-heading">Show stats table for:</h4>
+                     <label class="ga-reports-heading" for=”stats_table_id”>Show stats table for:</label>
                      ${month_selector(c.month, c.months, c.day)}
                    </form>
                 <hr/>
