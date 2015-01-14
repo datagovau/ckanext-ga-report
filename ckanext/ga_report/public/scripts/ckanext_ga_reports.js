@@ -116,6 +116,7 @@ CKAN.GA_Reports.bind_sidebar = function() {
   );
   /* The first tab might already have been shown */
   $('li.active > a[data-toggle="tab"]').trigger('shown');
+  $('.tabbable').on('shown', function(e){$('span.reader-offleft').not('.show-menu').text('Tab ');$('span',e.target).text('Tab selected'); e.stopPropagation(); });
 };
 
 CKAN.GA_Reports.bind_month_selector = function() {

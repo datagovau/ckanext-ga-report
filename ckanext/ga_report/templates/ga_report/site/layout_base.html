@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
-  <!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"
+<!--[if IE 8 ]>    <html class="no-js ie8" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+  <!--[if (gte IE 9)|!(IE)]><!--> <html lang="en" class="no-js"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:i18n="http://genshi.edgewall.org/i18n"
       xmlns:py="http://genshi.edgewall.org/"
@@ -9,7 +9,7 @@
       > <!--<![endif]-->
 <xi:include href="../../_util.html" />
 <head>
-  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
   <title>${page_title()} - ${g.site_title}</title>
@@ -33,19 +33,21 @@
   <link rel="stylesheet" href="${h.url_for_static('/css/bootstrap.min.css')}" type="text/css" media="screen, projection" />
   <link rel="stylesheet" href="${h.url_for_static('/css/chosen.css')}" type="text/css" />
   <link rel="stylesheet" href="${h.url_for_static('/css/style.css?v=2')}" />
-  ${jsConditionalForIe(9, '&lt;script type="text/javascript" src="' + h.url_for_static('/scripts/vendor/html5shiv/html5.js') + '"&gt;&lt;/script&gt;')}
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <py:if test="defined('jsConditionalForIe')">
+    ${jsConditionalForIe(9, '&lt;script type="text/javascript" src="' + h.url_for_static('/scripts/vendor/html5shiv/html5.js') + '"&gt;&lt;/script&gt;')}
+  </py:if>
+<script src="//code.jquery.com/jquery-1.11.0.min.js" type="text/css" ></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js" type="text/css" ></script>
     <link rel="stylesheet" type="text/css" href="/scripts/vendor/rickshaw.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/ga_report.css?1"/>
-    <script type="text/javascript" src="/scripts/modernizr-2.6.2.custom.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/jquery.sparkline.modified.js"></script>
-    <script type="text/javascript" src="/scripts/ckanext_ga_reports.js?1"></script>
-    <script type="text/javascript" src="/scripts/rickshaw_ie7_shim.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/d3.v2.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/d3.layout.min.js"></script>
-    <script type="text/javascript" src="/scripts/vendor/rickshaw.min.js"></script>
-<style>
+    <script type="text/javascript" src="/scripts/modernizr-2.6.2.custom.js"  ></script>
+    <script type="text/javascript" src="/scripts/vendor/jquery.sparkline.modified.js"  ></script>
+    <script type="text/javascript" src="/scripts/ckanext_ga_reports.js?1"  ></script>
+    <script type="text/javascript" src="/scripts/rickshaw_ie7_shim.js"  ></script>
+    <script type="text/javascript" src="/scripts/vendor/d3.v2.js"  ></script>
+    <script type="text/javascript" src="/scripts/vendor/d3.layout.min.js"  ></script>
+    <script type="text/javascript" src="/scripts/vendor/rickshaw.min.js"  ></script>
+<style type="text/css">
 #pre-content #breadcrumbs {
     padding-left: 0;
     padding-top: 10px;

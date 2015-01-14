@@ -69,3 +69,4 @@
 .tab-content {
   padding-top: 12px;
 }
+.reader-offleft {position: absolute; left: -9999px;}
