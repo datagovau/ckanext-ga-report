@@ -9,7 +9,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <py:if test="request.user_agent.find('MSIE') != -1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   </py:if>
 
   <title>${page_title()} - ${g.site_title}</title>
@@ -232,7 +232,7 @@
   <!-- Translated js strings live inside an html template. -->
   <xi:include href="../../js_strings.html" />
   <!-- finally our application js that sets everything up-->
-  <script type="text/javascript" src="${h.url_for_static('/scripts/application.js?lang=' + (c.locale if c.locale else 'en'))}"></script>
+  <script type="text/javascript" src="${h.url_for_static('/scripts/application.js')}"></script>
   <script type="text/javascript" src="${h.url_for_static('/scripts/templates.js')}"></script>
 
   <script type="text/javascript">
