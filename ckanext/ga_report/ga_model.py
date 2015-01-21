@@ -3,9 +3,8 @@ import uuid
 
 from sqlalchemy import Table, Column, MetaData, ForeignKey
 from sqlalchemy import types
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, or_, func
 from sqlalchemy.orm import mapper, relation
-from sqlalchemy import func, or_
 
 import ckan.model as model
 import ckan.model.group as group
@@ -208,6 +207,8 @@ def post_update_url_stats():
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(key)
+        # some old data might have used UUIDs or old slugs, update All period data to be consistent
+        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
 
         values = {'id': make_uuid(),
                   'period_name': "All",
@@ -218,7 +219,10 @@ def post_update_url_stats():
                   'department_id': publisher,
                   'package_id': package
                   }
-        model.Session.add(GA_Url(**values))
+        if uuidregex.match(key):
+            log.info("ignoring "+key)
+        else:
+            model.Session.add(GA_Url(**values))
     model.Session.commit()
     log.debug('..done')
 
@@ -237,7 +241,10 @@ def update_url_stats(period_name, period_complete_day, url_data):
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(url)
-
+        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        if uuidregex.match(url):
+            log.info("ignoring "+url)
+            continue
         item = model.Session.query(GA_Url).\
             filter(GA_Url.period_name==period_name).\
             filter(GA_Url.url==url).first()
