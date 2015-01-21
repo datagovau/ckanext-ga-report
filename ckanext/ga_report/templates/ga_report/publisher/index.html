@@ -28,12 +28,11 @@
     <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all')">
       <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
     </py:with>
-    <h1>Site Usage</h1>
+    <h1>Site Usage <small>Publishers</small></h1>
 
     <div class="row" style="background: #fff;">
       <div class="col-md-8">
         <div class="whitebox">
-          <strong>Publishers</strong>
            ${rickshaw_graph(c.top_publishers_graph,'publishers')}
        </div>
       </div>
@@ -61,7 +60,7 @@
         </tr>
       </py:for>
      </table>
-  </div><!--/content-->
+  </div>
 
   <py:def function="optional_footer">
     <script type="text/javascript">

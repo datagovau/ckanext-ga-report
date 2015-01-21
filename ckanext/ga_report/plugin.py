@@ -2,13 +2,21 @@ import logging
 import ckan.lib.helpers as h
 import ckan.plugins as p
 from ckan.plugins import implements, toolkit
-
+from webhelpers.html import literal
 from ckanext.ga_report.helpers import (most_popular_datasets,
                                        popular_datasets,
                                        single_popular_dataset,
                                        month_option_title)
 
 log = logging.getLogger('ckanext.ga-report')
+
+def custom_gravatar(*pargs, **kargs):
+    gravatar = h.gravatar(*pargs, **kargs)
+    pos = gravatar.find('/>')
+    log.warn(gravatar)
+    gravatar = gravatar[:pos] + literal(' alt="User\'s profile gravatar" ') + gravatar[pos:]
+    log.warn(gravatar)
+    return gravatar
 
 class GAReportPlugin(p.SingletonPlugin):
     implements(p.IConfigurer, inherit=True)
@@ -29,7 +37,8 @@ class GAReportPlugin(p.SingletonPlugin):
             'popular_datasets': popular_datasets,
             'most_popular_datasets': most_popular_datasets,
             'single_popular_dataset': single_popular_dataset,
-            'month_option_title': month_option_title
+            'month_option_title': month_option_title,
+            'gravatar': custom_gravatar
         }
 
     def after_map(self, map):
