@@ -210,13 +210,13 @@ def post_update_url_stats():
         package, publisher = _get_package_and_publisher(key)
         # some old data might have used UUIDs or old slugs, update All period data to be consistent
         uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
-        altkey = ('/dataset/'+package if package else None)
+
         values = {'id': make_uuid(),
                   'period_name': "All",
                   'period_complete_day': 0,
-                  'url': altkey,
-                  'pageviews': int(views[key]) + int(0 if not altkey or altkey == key else views[altkey]),
-                  'visits': int(visits[key]) + int(0 if not altkey or altkey == key else views[altkey]),
+                  'url': key,
+                  'pageviews': views[key],
+                  'visits': visits[key],
                   'department_id': publisher,
                   'package_id': package
                   }
@@ -242,10 +242,10 @@ def update_url_stats(period_name, period_complete_day, url_data):
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(url)
-        uuidregex = re.compile('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
-        if package and url != '/dataset/'+package:
-            log.info('replacing uuid url '+url+' with /dataset/'+package)
-            url = '/dataset/'+package
+        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        if uuidregex.match(url):
+            log.info("ignoring "+url)
+            continue
         item = model.Session.query(GA_Url).\
             filter(GA_Url.period_name==period_name).\
             filter(GA_Url.url==url).first()
