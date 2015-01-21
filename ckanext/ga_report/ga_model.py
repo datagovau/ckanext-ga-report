@@ -3,11 +3,11 @@ import uuid
 
 from sqlalchemy import Table, Column, MetaData, ForeignKey
 from sqlalchemy import types
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, or_, func
 from sqlalchemy.orm import mapper, relation
-from sqlalchemy import func
 
 import ckan.model as model
+import ckan.model.group as group
 from ckan.lib.base import *
 
 log = __import__('logging').getLogger(__name__)
@@ -123,11 +123,12 @@ def _get_package_and_publisher(url):
     dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
-        dataset = model.Package.get(dataset_ref)
+        dataset = model.Session.query(model.PackageRevision).filter(or_(model.PackageRevision.name == dataset_ref,model.PackageRevision.id == dataset_ref)).first()
         if dataset:
-            publisher_groups = dataset.get_groups('organization')
-            if publisher_groups:
-                return dataset_ref,publisher_groups[0].name
+            owner_org = model.Session.query(group.Group).filter(group.Group.id == dataset.owner_org).first()
+            if owner_org:
+                return dataset.name,owner_org.name
+        log.debug('dataset '+dataset_ref+' not found')
         return dataset_ref, None
     else:
         publisher_match = re.match('/organization/([^/]+)(/.*)?', url)
@@ -206,17 +207,22 @@ def post_update_url_stats():
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(key)
-
+        # some old data might have used UUIDs or old slugs, update All period data to be consistent
+        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        altkey = ('/dataset/'+package if package else None)
         values = {'id': make_uuid(),
                   'period_name': "All",
                   'period_complete_day': 0,
-                  'url': key,
-                  'pageviews': views[key],
-                  'visits': visits[key],
+                  'url': altkey,
+                  'pageviews': int(views[key]) + int(0 if not altkey or altkey == key else views[altkey]),
+                  'visits': int(visits[key]) + int(0 if not altkey or altkey == key else views[altkey]),
                   'department_id': publisher,
                   'package_id': package
                   }
-        model.Session.add(GA_Url(**values))
+        if uuidregex.match(key):
+            log.info("ignoring "+key)
+        else:
+            model.Session.add(GA_Url(**values))
     model.Session.commit()
     log.debug('..done')
 
@@ -235,7 +241,10 @@ def update_url_stats(period_name, period_complete_day, url_data):
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(url)
-
+        uuidregex = re.compile('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        if package and url != '/dataset/'+package:
+            log.info('replacing uuid url '+url+' with /dataset/'+package)
+            url = '/dataset/'+package
         item = model.Session.query(GA_Url).\
             filter(GA_Url.period_name==period_name).\
             filter(GA_Url.url==url).first()
