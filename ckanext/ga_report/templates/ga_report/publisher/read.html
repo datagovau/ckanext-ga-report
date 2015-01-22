@@ -52,15 +52,15 @@
     </div>
     <hr/>
    <py:if test="c.month">
-     <h4>Statistics for ${h.month_option_title(c.month,c.months,c.day)}:</h4>
+     <label class="ga-reports-heading" for="month">Statistics for ${h.month_option_title(c.month,c.months,c.day)}:</label>
    </py:if>
    <py:if test="not c.month">
-     <h2>Statistics for all months</h2>
+      <label class="ga-reports-heading" for="month">Statistics for all months</label>
    </py:if>
    <form style="margin-bottom:10px;" class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='read')}" method="get">
       <div class="controls">
 
-        ${month_selector(c.month, c.months, c.day)}
+        ${month_selector(c.month, c.months, c.day, 'month')}
 
         <select name="publisher">
               <option value='' py:attrs="{'selected': 'selected' if not c.publisher else None}">All publishers</option>
