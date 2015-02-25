@@ -452,9 +452,9 @@ class DownloadAnalytics(object):
                 # Get package id associated with the resource that has this URL.
                 q = model.Session.query(model.Resource)
                 if cached:
-                    r = q.filter(model.ResourceRevision.cache_url.like("%s%%" % url)).first()
+                    r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
                 else:
-                    r = q.filter(model.ResourceRevision.url.like("%s%%" % url)).first()
+                    r = q.filter(model.Resource.url.like("%s%%" % url)).first()
 
                 # new style internal download links
                 if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
@@ -465,9 +465,12 @@ class DownloadAnalytics(object):
                         if filename:
                             sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                    "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE url ilike '%" + filename.group(
-                                1) + "%'"
+                                  "UNION SELECT distinct id FROM public.resource_revision t " \
+                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                  "UNION SELECT distinct id FROM public.resource t " \
+                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                  "UNION SELECT distinct id FROM public.resource_revision t " \
+                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
@@ -475,11 +478,14 @@ class DownloadAnalytics(object):
                     if not r:
                         filename = re.search('(\w+\.\w+$)', url)
                         if filename:
-                            sql = "SELECT distinct id FROM public.resource_revision t " \
+                            sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
                                     "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE url ilike '%" + filename.group(
-                                1) + "%'"
+                                    "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource t " \
+                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource_revision t " \
+                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
