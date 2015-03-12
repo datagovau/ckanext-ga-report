@@ -359,7 +359,7 @@ class GaDatasetReport(BaseController):
         '''
         Lists the most popular datasets for a publisher (or across all publishers)
         '''
-        count = 20
+        count = 100
 
         c.publishers = _get_publishers()
 
@@ -389,7 +389,7 @@ class GaDatasetReport(BaseController):
         entry = q.filter(GA_Url.period_name==c.month).first()
         c.publisher_page_views = entry.pageviews if entry else 0
 
-        c.top_packages = self._get_packages(publisher=c.publisher, count=20, month=c.month)
+        c.top_packages = self._get_packages(publisher=c.publisher, count=100, month=c.month)
 
         # Graph query
         top_packages_all_time = self._get_packages(publisher=c.publisher, count=20, month='All')
@@ -457,9 +457,9 @@ def _to_rickshaw(data, percentageMode=False):
     return data
 
 
-def _get_top_publishers(limit=20):
+def _get_top_publishers(limit=100):
     '''
-    Returns a list of the top 20 publishers by dataset visits.
+    Returns a list of the top 100 publishers by dataset visits.
     (The number to show can be varied with 'limit')
     '''
     month = c.month or 'All'
