@@ -41,8 +41,8 @@
        <hr/>
        <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publishers')}" method="get">
           <div class="controls">
-            <h2 class="ga-reports-heading">Statistics for</h2>
-              ${month_selector(c.month, c.months, c.day)}
+            <label class="ga-reports-heading" for="month">Statistics for</label>
+              ${month_selector(c.month, c.months, c.day, 'month')}
           </div>
        </form>
 
