@@ -232,24 +232,41 @@ def post_update_url_stats():
     log.debug('..done')
 
 
-def update_url_stats(period_name, period_complete_day, url_data):
+def update_url_stats(period_name, period_complete_day, data):
     '''
     Given a list of urls and number of hits for each during a given period,
     stores them in GA_Url under the period and recalculates the totals for
     the 'All' period.
     '''
+
+    url_data = {}
+    for url, views, visits in data:
+        item = {}
+        old_visits = url_data.get('url',{'visits':0})['visits']
+        old_views = url_data.get('url',{'views':0})['views']
+        package, publisher = _get_package_and_publisher(url)
+
+        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        if uuidregex.match(url):
+            if package:
+                url = '/dataset/'+package
+
+        item['package'] = package
+        item['publisher'] = publisher
+        item['visits'] = old_visits + int(visits)
+        item['views'] = old_views + int(views)
+        url_data[url] = item
+
     progress_total = len(url_data)
     progress_count = 0
-    for url, views, visits in url_data:
+    for url in url_data:
+        views = url_data[url]['views']
+        visits = url_data[url]['visits']
+        package = url_data[url]['package']
+        publisher = url_data[url]['publisher']
         progress_count += 1
         if progress_count % 100 == 0:
             log.debug('.. %d/%d done so far', progress_count, progress_total)
-
-        package, publisher = _get_package_and_publisher(url)
-        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
-        if uuidregex.match(url):
-            log.info("ignoring "+url)
-            continue
         item = model.Session.query(GA_Url).\
             filter(GA_Url.period_name==period_name).\
             filter(GA_Url.url==url).first()
