@@ -123,7 +123,12 @@ def _get_package_and_publisher(url):
     dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
-        dataset = model.Session.query(model.PackageRevision).filter(or_(model.PackageRevision.name == dataset_ref,model.PackageRevision.id == dataset_ref)).first()
+        dataset = model.Session.query(model.Package).filter(or_(model.Package.name == dataset_ref,model.Package.id == dataset_ref)).first()
+        # search historical data as a fallback only
+        if not dataset:
+            dataset_rev = model.Session.query(model.PackageRevision).filter(or_(model.PackageRevision.name == dataset_ref,model.PackageRevision.id == dataset_ref)).first()
+            if dataset_rev:
+                dataset = model.Session.query(model.Package).filter(model.Package.id == dataset_rev.id).first()
         if dataset:
             owner_org = model.Session.query(group.Group).filter(group.Group.id == dataset.owner_org).first()
             if owner_org:
