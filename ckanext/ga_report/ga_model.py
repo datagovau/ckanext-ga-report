@@ -242,19 +242,16 @@ def update_url_stats(period_name, period_complete_day, data):
     url_data = {}
     for url, views, visits in data:
         item = {}
-        old_visits = url_data.get('url',{'visits':0})['visits']
-        old_views = url_data.get('url',{'views':0})['views']
+        old_visits = url_data.get(url,{'visits':0})['visits']
+        old_views = url_data.get(url,{'views':0})['views']
         package, publisher = _get_package_and_publisher(url)
-
-        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
-        if uuidregex.match(url):
-            if package:
-                url = '/dataset/'+package
+        if package:
+            url = '/dataset/'+package
 
         item['package'] = package
         item['publisher'] = publisher
-        item['visits'] = old_visits + int(visits)
-        item['views'] = old_views + int(views)
+        item['visits'] = int(old_visits) + int(visits)
+        item['views'] = int(old_views) + int(views)
         url_data[url] = item
 
     progress_total = len(url_data)
