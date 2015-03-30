@@ -307,6 +307,16 @@ class GaDatasetReport(BaseController):
         x =  render('ga_report/publisher/index.html')
 
         return x
+    def _res_list_reduce(self,list_):
+        ''' Take a list of dicts and create a new one containing just the
+        values for the key with unique values if requested. '''
+        new_list = []
+        for item in list_:
+            value = item.format
+            if not value or value in new_list:
+                continue
+            new_list.append(value)
+        return new_list
 
     def _get_packages(self, publisher=None, month='', count=-1):
         '''Returns the datasets in order of views'''
@@ -343,7 +353,7 @@ class GaDatasetReport(BaseController):
                 else:
                     downloads = 'No data'
                 if package.private == False:
-                    top_packages.append((package, entry.pageviews, entry.visits, downloads))
+                    top_packages.append((package, entry.pageviews, entry.visits, downloads, self._res_list_reduce(package.resources)))
             else:
                 log.warning('Could not find package associated package')
 
