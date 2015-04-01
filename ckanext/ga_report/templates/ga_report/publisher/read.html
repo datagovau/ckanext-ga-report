@@ -79,10 +79,13 @@
          <th>Views</th>
          <th>Downloads</th>
        </tr>
-       <py:for each="package, views, visits,downloads in c.top_packages">
+         <py:for each="package, views, visits,downloads, resources in c.top_packages">
          <tr>
            <td>
              ${h.link_to(package.title or package.name, h.url_for(controller='package', action='read', id=package.name))}
+               <py:for each="resource in resources">
+                     <a href="" class="label" data-format="${resource}">${resource}</a>
+                   </py:for>
            </td>
            <td class="td-numeric">${views}</td>
            <td class="td-numeric">${downloads}</td> 
