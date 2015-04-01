@@ -76,6 +76,7 @@
      <table class="ga-reports-table table table-condensed table-bordered">
        <tr>
          <th>Dataset</th>
+         <th>Dataset Formats</th>
          <th>Views</th>
          <th>Downloads</th>
        </tr>
@@ -83,6 +84,7 @@
          <tr>
            <td>
              ${h.link_to(package.title or package.name, h.url_for(controller='package', action='read', id=package.name))}
+</td><td>
                <py:for each="resource in resources">
                      <a href="" class="label" data-format="${resource}">${resource}</a>
                    </py:for>
