@@ -29,7 +29,7 @@ def popular_datasets(count=10):
     }
     return base.render_snippet('ga_report/ga_popular_datasets.html', **ctx)
 
-def single_popular_dataset(top=20):
+def single_popular_dataset(top=100):
     '''Returns a random dataset from the most popular ones.
 
     :param top: the number of top datasets to select from
@@ -68,7 +68,7 @@ def single_popular_dataset(top=20):
                                               {'id':dataset.id})
     return dataset_dict
 
-def single_popular_dataset_html(top=20):
+def single_popular_dataset_html(top=100):
     dataset_dict = single_popular_dataset(top)
     groups = package.get('groups', [])
     publishers = [ g for g in groups if g.get('type') == 'organization' ]
@@ -80,7 +80,7 @@ def single_popular_dataset_html(top=20):
     return base.render_snippet('ga_report/ga_popular_single.html', **context)
 
 
-def most_popular_datasets(publisher, count=20, preview_image=None):
+def most_popular_datasets(publisher, count=100, preview_image=None):
 
     if not publisher:
         _log.error("No valid publisher passed to 'most_popular_datasets'")

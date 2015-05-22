@@ -314,7 +314,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["metrics"] = "ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visits"
+            args["metrics"] = "ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visits,ga:users"
             args["alt"] = "json"
 
             results = self._get_json(args)
@@ -328,6 +328,7 @@ class DownloadAnalytics(object):
             'Average time on site': result_data[0][1],
             'New visits': result_data[0][2],
             'Total visits': result_data[0][3],
+            'Unique visitors': result_data[0][4],
         }
         ga_model.update_sitewide_stats(period_name, "Totals", data, period_complete_day)
 
@@ -452,9 +453,9 @@ class DownloadAnalytics(object):
                 # Get package id associated with the resource that has this URL.
                 q = model.Session.query(model.Resource)
                 if cached:
-                    r = q.filter(model.ResourceRevision.cache_url.like("%s%%" % url)).first()
+                    r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
                 else:
-                    r = q.filter(model.ResourceRevision.url.like("%s%%" % url)).first()
+                    r = q.filter(model.Resource.url.like("%s%%" % url)).first()
 
                 # new style internal download links
                 if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
@@ -465,9 +466,12 @@ class DownloadAnalytics(object):
                         if filename:
                             sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                    "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE url ilike '%" + filename.group(
-                                1) + "%'"
+                                  "UNION SELECT distinct id FROM public.resource_revision t " \
+                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                  "UNION SELECT distinct id FROM public.resource t " \
+                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                  "UNION SELECT distinct id FROM public.resource_revision t " \
+                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
@@ -475,11 +479,14 @@ class DownloadAnalytics(object):
                     if not r:
                         filename = re.search('(\w+\.\w+$)', url)
                         if filename:
-                            sql = "SELECT distinct id FROM public.resource_revision t " \
+                            sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
                                     "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE url ilike '%" + filename.group(
-                                1) + "%'"
+                                    "WHERE url ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource t " \
+                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                    "UNION SELECT distinct id FROM public.resource_revision t " \
+                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
@@ -652,3 +659,4 @@ class DownloadAnalytics(object):
         for result in result_data:
             data[result[1]] = data.get(result[1], 0) + int(result[2])
         ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
+
