@@ -99,7 +99,7 @@ class GaReport(BaseController):
         entries = q.order_by('ga_stat.key').all()
 
         def clean_key(key, val):
-            if key in ['Average time on site', 'Pages per visit', 'New visits', 'Bounce rate (home page)']:
+            if key in ['Average time on site', 'Pages per visit', 'New visits', 'Bounce rate (home page)', 'Unique visitors']:
                 val =  "%.2f" % round(float(val), 2)
                 if key == 'Average time on site':
                     mins, secs = divmod(float(val), 60)
@@ -140,7 +140,7 @@ class GaReport(BaseController):
                 if k in ['Total page views', 'Total visits']:
                     v = sum(v)
                 else:
-                    v = float(sum(v))/float(len(v))
+                    v = round(float(sum(v))/float(len(v)), 2)
                 sparkline = sparkline_data[k]
                 key, val = clean_key(k,v)
 
