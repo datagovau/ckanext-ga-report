@@ -242,12 +242,11 @@ def update_url_stats(period_name, period_complete_day, data):
     url_data = {}
     for url, views, visits in data:
         item = {}
-        old_visits = url_data.get(url,{'visits':0})['visits']
-        old_views = url_data.get(url,{'views':0})['views']
         package, publisher = _get_package_and_publisher(url)
         if package:
             url = '/dataset/'+package
-
+        old_visits = url_data.get(url,{'visits':0})['visits']
+        old_views = url_data.get(url,{'views':0})['views']
         item['package'] = package
         item['publisher'] = publisher
         item['visits'] = int(old_visits) + int(visits)

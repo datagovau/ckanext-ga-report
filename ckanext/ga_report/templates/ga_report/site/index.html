@@ -83,7 +83,7 @@
                      </tr>
                       <py:for each="name, value, graph in c.global_totals">
                           <tr>
-                              <td>${name}</td>
+                              <td>${name if name != 'Unique visitors' or c.month else 'Average monthly unique visitors'}</td>
                               <td class="td-numeric">${value}</td>
                               <td class="sparkline-cell">
                                 <span class="sparkline" sparkTooltips="${','.join([x for x,y in graph])}">

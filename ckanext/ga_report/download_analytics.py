@@ -314,7 +314,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["metrics"] = "ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visits"
+            args["metrics"] = "ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visits,ga:users"
             args["alt"] = "json"
 
             results = self._get_json(args)
@@ -328,6 +328,7 @@ class DownloadAnalytics(object):
             'Average time on site': result_data[0][1],
             'New visits': result_data[0][2],
             'Total visits': result_data[0][3],
+            'Unique visitors': result_data[0][4],
         }
         ga_model.update_sitewide_stats(period_name, "Totals", data, period_complete_day)
 
@@ -658,3 +659,4 @@ class DownloadAnalytics(object):
         for result in result_data:
             data[result[1]] = data.get(result[1], 0) + int(result[2])
         ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
+
