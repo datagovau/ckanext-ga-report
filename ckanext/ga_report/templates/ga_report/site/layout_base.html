@@ -5,7 +5,7 @@
       xmlns:py="http://genshi.edgewall.org/"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       > <!--<![endif]-->
-<xi:include href="../../_util.html" />
+<xi:include href="_util.html" />
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <py:if test="request.user_agent.find('MSIE') != -1">
@@ -274,7 +274,7 @@
   <script type="text/javascript" src="${h.url_for_static('/scripts/vendor/jquery.fileupload/20110801/jquery.fileupload.js')}"></script>
 
   <!-- Translated js strings live inside an html template. -->
-  <xi:include href="../../js_strings.html" />
+  <xi:include href="js_strings.html" />
   <!-- finally our application js that sets everything up-->
   <script type="text/javascript" src="${h.url_for_static('/scripts/application.js')}"></script>
   <script type="text/javascript" src="${h.url_for_static('/scripts/templates.js')}"></script>

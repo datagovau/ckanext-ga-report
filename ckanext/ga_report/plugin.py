@@ -13,9 +13,7 @@ log = logging.getLogger('ckanext.ga-report')
 def custom_gravatar(*pargs, **kargs):
     gravatar = h.gravatar(*pargs, **kargs)
     pos = gravatar.find('/>')
-    log.warn(gravatar)
     gravatar = gravatar[:pos] + literal(' alt="User\'s profile gravatar" ') + gravatar[pos:]
-    log.warn(gravatar)
     return gravatar
 
 class GAReportPlugin(p.SingletonPlugin):
