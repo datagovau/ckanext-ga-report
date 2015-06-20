@@ -417,7 +417,10 @@ class GaDatasetReport(BaseController):
                 'raw': {}
                 })
             all_series[package.name]['raw'][entry.period_name] = int(entry.pageviews)
-        graph = [ all_series[series_name] for series_name in top_package_names ]
+        graph = []
+        for series_name in top_package_names:
+            if series_name in all_series:
+	        graph.append(all_series[series_name])
         c.graph_data = json.dumps( _to_rickshaw(graph) )
 
         return render('ga_report/publisher/read.html')
