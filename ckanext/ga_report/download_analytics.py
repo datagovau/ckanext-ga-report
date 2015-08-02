@@ -492,7 +492,12 @@ class DownloadAnalytics(object):
                                 resource_id = res[0]
                                 r = q.filter(model.Resource.id == resource_id).first()
 
-                package_name = r.resource_group.package.name if r else ""
+                package_name = ""
+		if r:
+                    if hasattr(r,'resource_group'):
+                        package_name = r.resource_group.package.name
+                    if hasattr(r,'package'):
+                        package_name = r.package.name
 
                 if package_name:
                     data[package_name] = data.get(package_name, 0) + int(result[1])
