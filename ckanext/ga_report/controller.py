@@ -277,14 +277,14 @@ class GaDatasetReport(BaseController):
             str('attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
 
         writer = csv.writer(response)
-        writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Period Name"])
+        writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Dataset formats", "Period Name"])
 
-        for package,view,visit,downloads in packages:
+        for package,view,visit,downloads,formats in packages:
             writer.writerow([package.title.encode('utf-8'),
                              package.name.encode('utf-8'),
                              view,
                              visit,
-                             downloads,
+                             downloads,formats,
                              month])
 
     def publishers(self):
