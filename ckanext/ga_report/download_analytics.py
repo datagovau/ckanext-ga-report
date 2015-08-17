@@ -120,7 +120,7 @@ class DownloadAnalytics(object):
                 accountName = config.get('googleanalytics.account')
 
                 log.info('Downloading analytics for dataset views')
-                data = self.download(start_date, end_date, '~^/dataset/[a-z0-9-_]+')
+                data = self.download(start_date, end_date, '~^/data/dataset/[a-z0-9-_]+')
 
                 log.info('Storing dataset views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
@@ -216,9 +216,9 @@ class DownloadAnalytics(object):
                 # url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
                 url = loc
                 #print url
-                if not url.startswith('/dataset/') and not url.startswith('/organization/'):
+                if not url.startswith('/data/dataset/') and not url.startswith('/organization/'):
                     # filter out strays like:
-                    # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
+                    # /data/user/login?came_from=http://data.gov.uk/data/dataset/os-code-point-open
                     # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
                     continue
                 packages.append((url, pageviews, visits,))  # Temporary hack
