@@ -41,7 +41,7 @@ class GetAuthToken(CkanCommand):
     """
     summary = __doc__.split('\n')[0]
     usage = __doc__
-    max_args = 0
+    max_args = 1 
     min_args = 0
 
     def command(self):
@@ -64,7 +64,7 @@ class FixTimePeriods(CkanCommand):
     """
     summary = __doc__.split('\n')[0]
     usage = __doc__
-    max_args = 0
+    max_args = 1 
     min_args = 0
 
     def __init__(self, name):
