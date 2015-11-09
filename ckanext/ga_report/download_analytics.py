@@ -655,13 +655,14 @@ class DownloadAnalytics(object):
             results = dict(url=[])
 
         result_data = results.get('rows')
-        data = {}
-        for result in result_data:
-            data[result[0]] = data.get(result[0], 0) + int(result[2])
-        ga_model.update_sitewide_stats(period_name, "Mobile brands", data, period_complete_day)
+        if result_data: 
+            data = {}
+            for result in result_data:
+                data[result[0]] = data.get(result[0], 0) + int(result[2])
+            ga_model.update_sitewide_stats(period_name, "Mobile brands", data, period_complete_day)
 
-        data = {}
-        for result in result_data:
-            data[result[1]] = data.get(result[1], 0) + int(result[2])
-        ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
+            data = {}
+            for result in result_data:
+                data[result[1]] = data.get(result[1], 0) + int(result[2])
+            ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
 
