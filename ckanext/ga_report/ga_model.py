@@ -3,12 +3,11 @@ import uuid
 
 from sqlalchemy import Table, Column, MetaData, ForeignKey
 from sqlalchemy import types
-from sqlalchemy.sql import select, or_, func
+from sqlalchemy.sql import select
 from sqlalchemy.orm import mapper, relation
-from sqlalchemy import func, or_
+from sqlalchemy import func
 
 import ckan.model as model
-import ckan.model.group as group
 from ckan.lib.base import *
 
 log = __import__('logging').getLogger(__name__)
@@ -124,17 +123,11 @@ def _get_package_and_publisher(url):
     dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
-        dataset = model.Session.query(model.Package).filter(or_(model.Package.name == dataset_ref,model.Package.id == dataset_ref)).first()
-        # search historical data as a fallback only
-        if not dataset:
-            dataset_rev = model.Session.query(model.PackageRevision).filter(or_(model.PackageRevision.name == dataset_ref,model.PackageRevision.id == dataset_ref)).first()
-            if dataset_rev:
-                dataset = model.Session.query(model.Package).filter(model.Package.id == dataset_rev.id).first()
+        dataset = model.Package.get(dataset_ref)
         if dataset:
-            owner_org = model.Session.query(group.Group).filter(group.Group.id == dataset.owner_org).first()
-            if owner_org:
-                return dataset.name,owner_org.name
-        log.debug('dataset '+dataset_ref+' not found')
+            publisher_groups = dataset.get_groups('organization')
+            if publisher_groups:
+                return dataset_ref,publisher_groups[0].name
         return dataset_ref, None
     else:
         publisher_match = re.match('/organization/([^/]+)(/.*)?', url)
@@ -213,8 +206,6 @@ def post_update_url_stats():
             log.debug('.. %d/%d done so far', progress_count, progress_total)
 
         package, publisher = _get_package_and_publisher(key)
-        # some old data might have used UUIDs or old slugs, update All period data to be consistent
-        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
 
         values = {'id': make_uuid(),
                   'period_name': "All",
@@ -225,45 +216,26 @@ def post_update_url_stats():
                   'department_id': publisher,
                   'package_id': package
                   }
-        if uuidregex.match(key):
-            log.info("ignoring "+key)
-        else:
-            model.Session.add(GA_Url(**values))
+        model.Session.add(GA_Url(**values))
     model.Session.commit()
     log.debug('..done')
 
 
-def update_url_stats(period_name, period_complete_day, data):
+def update_url_stats(period_name, period_complete_day, url_data):
     '''
     Given a list of urls and number of hits for each during a given period,
     stores them in GA_Url under the period and recalculates the totals for
     the 'All' period.
     '''
-
-    url_data = {}
-    for url, views, visits in data:
-        item = {}
-        package, publisher = _get_package_and_publisher(url)
-        if package:
-            url = '/dataset/'+package
-        old_visits = url_data.get(url,{'visits':0})['visits']
-        old_views = url_data.get(url,{'views':0})['views']
-        item['package'] = package
-        item['publisher'] = publisher
-        item['visits'] = int(old_visits) + int(visits)
-        item['views'] = int(old_views) + int(views)
-        url_data[url] = item
-
     progress_total = len(url_data)
     progress_count = 0
-    for url in url_data:
-        views = url_data[url]['views']
-        visits = url_data[url]['visits']
-        package = url_data[url]['package']
-        publisher = url_data[url]['publisher']
+    for url, views, visits in url_data:
         progress_count += 1
         if progress_count % 100 == 0:
             log.debug('.. %d/%d done so far', progress_count, progress_total)
+
+        package, publisher = _get_package_and_publisher(url)
+
         item = model.Session.query(GA_Url).\
             filter(GA_Url.period_name==period_name).\
             filter(GA_Url.url==url).first()

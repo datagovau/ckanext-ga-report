@@ -28,11 +28,12 @@
     <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all')">
       <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
     </py:with>
-    <h1>Site Usage <small>Publishers</small></h1>
+    <h1>Site Usage</h1>
 
     <div class="row" style="background: #fff;">
       <div class="col-md-8">
         <div class="whitebox">
+          <strong>Publishers</strong>
            ${rickshaw_graph(c.top_publishers_graph,'publishers')}
        </div>
       </div>
@@ -41,8 +42,8 @@
        <hr/>
        <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publishers')}" method="get">
           <div class="controls">
-            <label class="ga-reports-heading" for="month">Statistics for</label>
-              ${month_selector(c.month, c.months, c.day, 'month')}
+            <h2 class="ga-reports-heading">Statistics for</h2>
+              ${month_selector(c.month, c.months, c.day)}
           </div>
        </form>
 
@@ -60,7 +61,7 @@
         </tr>
       </py:for>
      </table>
-  </div>
+  </div><!--/content-->
 
   <py:def function="optional_footer">
     <script type="text/javascript">

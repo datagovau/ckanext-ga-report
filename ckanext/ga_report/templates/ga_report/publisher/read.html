@@ -52,15 +52,15 @@
     </div>
     <hr/>
    <py:if test="c.month">
-     <label class="ga-reports-heading" for="month">Statistics for ${h.month_option_title(c.month,c.months,c.day)}:</label>
+     <h4>Statistics for ${h.month_option_title(c.month,c.months,c.day)}:</h4>
    </py:if>
    <py:if test="not c.month">
-      <label class="ga-reports-heading" for="month">Statistics for all months</label>
+     <h2>Statistics for all months</h2>
    </py:if>
    <form style="margin-bottom:10px;" class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='read')}" method="get">
       <div class="controls">
 
-        ${month_selector(c.month, c.months, c.day, 'month')}
+        ${month_selector(c.month, c.months, c.day)}
 
         <select name="publisher">
               <option value='' py:attrs="{'selected': 'selected' if not c.publisher else None}">All publishers</option>
@@ -76,18 +76,13 @@
      <table class="ga-reports-table table table-condensed table-bordered">
        <tr>
          <th>Dataset</th>
-         <th>Dataset Formats</th>
          <th>Views</th>
-         <th>Downloads</th>
+         <!--<th>Downloads</th>-->
        </tr>
-         <py:for each="package, views, visits,downloads, resources in c.top_packages">
+       <py:for each="package, views, visits,downloads in c.top_packages">
          <tr>
            <td>
              ${h.link_to(package.title or package.name, h.url_for(controller='package', action='read', id=package.name))}
-</td><td>
-               <py:for each="resource in resources">
-                     <a href="" class="label" data-format="${resource}">${resource[:15]}</a>
-                   </py:for>
            </td>
            <td class="td-numeric">${views}</td>
            <td class="td-numeric">${downloads}</td> 

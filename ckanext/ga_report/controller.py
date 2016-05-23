@@ -99,7 +99,7 @@ class GaReport(BaseController):
         entries = q.order_by('ga_stat.key').all()
 
         def clean_key(key, val):
-            if key in ['Average time on site', 'Pages per visit', 'New visits', 'Bounce rate (home page)', 'Unique visitors']:
+            if key in ['Average time on site', 'Pages per visit', 'New visits', 'Bounce rate (home page)']:
                 val =  "%.2f" % round(float(val), 2)
                 if key == 'Average time on site':
                     mins, secs = divmod(float(val), 60)
@@ -140,7 +140,7 @@ class GaReport(BaseController):
                 if k in ['Total page views', 'Total visits']:
                     v = sum(v)
                 else:
-                    v = round(float(sum(v))/float(len(v)), 2)
+                    v = float(sum(v))/float(len(v))
                 sparkline = sparkline_data[k]
                 key, val = clean_key(k,v)
 
@@ -277,14 +277,14 @@ class GaDatasetReport(BaseController):
             str('attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
 
         writer = csv.writer(response)
-        writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Dataset formats", "Period Name"])
+        writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Period Name"])
 
-        for package,view,visit,downloads,formats in packages:
+        for package,view,visit,downloads in packages:
             writer.writerow([package.title.encode('utf-8'),
                              package.name.encode('utf-8'),
                              view,
                              visit,
-                             downloads,formats,
+                             downloads,
                              month])
 
     def publishers(self):
@@ -307,16 +307,6 @@ class GaDatasetReport(BaseController):
         x =  render('ga_report/publisher/index.html')
 
         return x
-    def _res_list_reduce(self,list_):
-        ''' Take a list of dicts and create a new one containing just the
-        values for the key with unique values if requested. '''
-        new_list = []
-        for item in list_:
-            value = item.format
-            if not value or value in new_list:
-                continue
-            new_list.append(value)
-        return new_list
 
     def _get_packages(self, publisher=None, month='', count=-1):
         '''Returns the datasets in order of views'''
@@ -353,7 +343,7 @@ class GaDatasetReport(BaseController):
                 else:
                     downloads = 'No data'
                 if package.private == False:
-                    top_packages.append((package, entry.pageviews, entry.visits, downloads, self._res_list_reduce(package.resources)))
+                    top_packages.append((package, entry.pageviews, entry.visits, downloads))
             else:
                 log.warning('Could not find package associated package')
 
@@ -369,7 +359,7 @@ class GaDatasetReport(BaseController):
         '''
         Lists the most popular datasets for a publisher (or across all publishers)
         '''
-        count = 100
+        count = 20
 
         c.publishers = _get_publishers()
 
@@ -399,7 +389,7 @@ class GaDatasetReport(BaseController):
         entry = q.filter(GA_Url.period_name==c.month).first()
         c.publisher_page_views = entry.pageviews if entry else 0
 
-        c.top_packages = self._get_packages(publisher=c.publisher, count=100, month=c.month)
+        c.top_packages = self._get_packages(publisher=c.publisher, count=20, month=c.month)
 
         # Graph query
         top_packages_all_time = self._get_packages(publisher=c.publisher, count=20, month='All')
@@ -467,9 +457,9 @@ def _to_rickshaw(data, percentageMode=False):
     return data
 
 
-def _get_top_publishers(limit=100):
+def _get_top_publishers(limit=20):
     '''
-    Returns a list of the top 100 publishers by dataset visits.
+    Returns a list of the top 20 publishers by dataset visits.
     (The number to show can be varied with 'limit')
     '''
     month = c.month or 'All'

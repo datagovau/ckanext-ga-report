@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<!--[if IE 8 ]>    <html class="no-js ie8" lang="en" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
-  <!--[if (gte IE 9)|!(IE)]><!--> <html lang="en" class="no-js"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
+  <!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:i18n="http://genshi.edgewall.org/i18n"
       xmlns:py="http://genshi.edgewall.org/"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       > <!--<![endif]-->
 <xi:include href="_util.html" />
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <py:if test="request.user_agent.find('MSIE') != -1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  </py:if>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
   <title>${page_title()} - ${g.site_title}</title>
   <meta name="description" content="" />
@@ -27,7 +27,7 @@
   <link rel="alternate" type="application/atom+xml" title="${g.site_title} - Recent Revision History" href="${h.url_for(controller='revision', action='list', format='atom', days=1)}" />
   </py:otherwise>
   </py:choose>
-  <link href='//fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css' />
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css' />
 
   <link rel="stylesheet" href="${h.url_for_static('/scripts/vendor/jqueryui/1.8.14/css/jquery-ui.custom.css')}" type="text/css" media="screen, print" />
   <link rel="stylesheet" href="${h.url_for_static('/css/bootstrap.min.css')}" type="text/css" media="screen, projection" />
