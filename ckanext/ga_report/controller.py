@@ -465,13 +465,13 @@ def _get_top_publishers(limit=20):
     month = c.month or 'All'
     connection = model.Session.connection()
     q = """
-        select department_id, sum(pageviews::int) pageviews, sum(visits::int) visits
+        select department_id, sum(pageviews::int) pviews, sum(visits::int) visits
         from ga_url
         where department_id <> ''
           and package_id <> ''
           and url like '/dataset/%%'
           and period_name=%s
-        group by department_id order by pageviews desc
+        group by department_id order by pviews desc
         """
     if limit:
         q = q + " limit %s;" % (limit)
@@ -492,13 +492,13 @@ def _get_top_publishers_graph(limit=20):
     '''
     connection = model.Session.connection()
     q = """
-        select department_id, sum(pageviews::int) views
+        select department_id, sum(pageviews::int) pviews
         from ga_url
         where department_id <> ''
           and package_id <> ''
           and url like '/dataset/%%'
           and period_name='All'
-        group by department_id order by views desc
+        group by department_id order by pviews desc
         """
     if limit:
         q = q + " limit %s;" % (limit)
