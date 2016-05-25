@@ -658,14 +658,53 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
+
         result_data = results.get('rows')
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
+        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Mobile brands", data, period_complete_day)
 
         data = {}
         for result in result_data:
             data[result[1]] = data.get(result[1], 0) + int(result[2])
+        self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Mobile devices", data, period_complete_day)
 
+    @classmethod
+    def _filter_out_long_tail(cls, data, threshold=10):
+        '''
+        Given data which is a frequency distribution, filter out
+        results which are below a threshold count. This is good to protect
+        privacy.
+        '''
+        for key, value in data.items():
+            if value < threshold:
+                del data[key]
+
+global host_re
+host_re = None
+
+
+def strip_off_host_prefix(url):
+    '''Strip off the hostname that gets prefixed to the GA Path on data.gov.uk
+    UA-1 but not on others.
+
+    >>> strip_off_host_prefix('/data.gov.uk/dataset/weekly_fuel_prices')
+    '/dataset/weekly_fuel_prices'
+    >>> strip_off_host_prefix('/dataset/weekly_fuel_prices')
+    '/dataset/weekly_fuel_prices'
+    '''
+    global host_re
+    if not host_re:
+        host_re = re.compile('^\/[^\/]+\.')
+    # look for a dot in the first part of the path
+    if host_re.search(url):
+        # there is a dot, so must be a host name - strip it off
+        return '/' + '/'.join(url.split('/')[2:])
+    return url
+
+
+class DownloadError(Exception):
+    pass
