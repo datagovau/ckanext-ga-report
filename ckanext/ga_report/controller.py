@@ -517,11 +517,12 @@ def _get_top_publishers_graph(limit=20):
         .group_by( GA_Url.department_id, GA_Url.period_name )
     graph_dict = {}
     for dept_id,period_name,views in q:
-        graph_dict[dept_id] = graph_dict.get( dept_id, {
-            'name' : model.Group.get(dept_id).title,
-            'raw' : {}
-            })
-        graph_dict[dept_id]['raw'][period_name] = views
+        if model.Group.get(dept_id):
+            graph_dict[dept_id] = graph_dict.get( dept_id, {
+                'name' : model.Group.get(dept_id).title,
+                'raw' : {}
+                })
+            graph_dict[dept_id]['raw'][period_name] = views
     return [ graph_dict[id] for id in department_ids ]
 
 
