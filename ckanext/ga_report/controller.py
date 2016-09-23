@@ -523,6 +523,8 @@ def _get_top_publishers_graph(limit=20):
                 'raw' : {}
                 })
             graph_dict[dept_id]['raw'][period_name] = views
+        else:
+            department_ids.pop(dept_id)
     return [ graph_dict[id] for id in department_ids ]
 
 
