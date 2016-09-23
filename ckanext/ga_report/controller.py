@@ -516,6 +516,7 @@ def _get_top_publishers_graph(limit=20):
         .filter( GA_Url.package_id!='' )\
         .group_by( GA_Url.department_id, GA_Url.period_name )
     graph_dict = {}
+    department_ids = []
     for dept_id,period_name,views in q:
         if model.Group.get(dept_id):
             graph_dict[dept_id] = graph_dict.get( dept_id, {
@@ -523,8 +524,7 @@ def _get_top_publishers_graph(limit=20):
                 'raw' : {}
                 })
             graph_dict[dept_id]['raw'][period_name] = views
-        else:
-            department_ids.pop(dept_id)
+            department_ids.append(dept_id)
     return [ graph_dict[id] for id in department_ids ]
 
 
