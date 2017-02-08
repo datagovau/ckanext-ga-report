@@ -112,16 +112,16 @@ def get_table(name):
 def _normalize_url(url):
     '''Strip off the hostname etc. Do this before storing it.
 
-    >>> normalize_url('http://data.gov.uk/dataset/weekly_fuel_prices')
-    '/dataset/weekly_fuel_prices'
+    >>> normalize_url('http://data.gov.uk/data/dataset/weekly_fuel_prices')
+    '/data/dataset/weekly_fuel_prices'
     '''
     return url #'/' + '/'.join(url.split('/')[3:])
 
 
 def _get_package_and_publisher(url):
-    # e.g. /dataset/fuel_prices
-    # e.g. /dataset/fuel_prices/resource/e63380d4
-    dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
+    # e.g. /data/dataset/fuel_prices
+    # e.g. /data/dataset/fuel_prices/resource/e63380d4
+    dataset_match = re.match('/data/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
         dataset = model.Session.query(model.Package).filter(or_(model.Package.name == dataset_ref,model.Package.id == dataset_ref)).first()
@@ -214,7 +214,7 @@ def post_update_url_stats():
 
         package, publisher = _get_package_and_publisher(key)
         # some old data might have used UUIDs or old slugs, update All period data to be consistent
-        uuidregex = re.compile('\/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
+        uuidregex = re.compile('\/data/dataset\/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
 
         values = {'id': make_uuid(),
                   'period_name': "All",
@@ -245,7 +245,7 @@ def update_url_stats(period_name, period_complete_day, data):
         item = {}
         package, publisher = _get_package_and_publisher(url)
         if package:
-            url = '/dataset/'+package
+            url = '/data/dataset/'+package
         old_visits = url_data.get(url,{'visits':0})['visits']
         old_views = url_data.get(url,{'views':0})['views']
         item['package'] = package
@@ -345,7 +345,7 @@ def update_social(period_name, data):
 
 def update_publisher_stats(period_name):
     """
-    Updates the publisher stats from the data retrieved for /dataset/*
+    Updates the publisher stats from the data retrieved for /data/dataset/*
     and /publisher/*. Will run against each dataset and generates the
     totals for the entire tree beneath each publisher.
     """
