@@ -10,6 +10,7 @@ import re
 from pylons import config
 from ga_model import _normalize_url
 import ga_model
+from ckan.logic.auth import get_package_object
 
 # from ga_client import GA
 
@@ -28,6 +29,29 @@ class DownloadAnalytics(object):
         self.delete_first = delete_first
         self.skip_url_stats = skip_url_stats
         self.token = token
+
+    global host_re
+    host_re = None
+
+    def strip_off_host_prefix(url, context):
+        '''Strip off the hostname that gets prefixed to the GA Path on data.gov.uk
+        UA-1 but not on others.
+        >>> strip_off_host_prefix('/data.gov.uk/dataset/weekly_fuel_prices')
+        '/dataset/weekly_fuel_prices'
+        >>> strip_off_host_prefix('/dataset/weekly_fuel_prices')
+        '/dataset/weekly_fuel_prices'
+        '''
+
+        global host_re
+
+        if not host_re:
+            host_re = re.compile('^\/[^\/]+\.')
+            # look for a dot in the first part of the path
+
+        if host_re.search(url):
+            # there is a dot, so must be a host name - strip it off
+            return '/' + '/'.join(url.split('/')[2:])
+        return url
 
     def specific_month(self, date):
         import calendar
@@ -457,6 +481,7 @@ class DownloadAnalytics(object):
                 else:
                     r = q.filter(model.Resource.url.like("%s%%" % url)).first()
 
+                package_name = None
                 # new style internal download links
                 if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
                     resource_id = re.search('(?:\/resource\/)(.*)(?:\/download\/)', url)
@@ -476,6 +501,7 @@ class DownloadAnalytics(object):
                             if res:
                                 resource_id = res[0]
                                 r = q.filter(model.Resource.id == resource_id).first()
+                                log.debug('Found resource: %r', r.package_id)
                     if not r:
                         filename = re.search('(\w+\.\w+$)', url)
                         if filename:
@@ -492,9 +518,11 @@ class DownloadAnalytics(object):
                                 resource_id = res[0]
                                 r = q.filter(model.Resource.id == resource_id).first()
 
-                package_name = r.resource_group.package.name if r else ""
+                package_name = model.Session.query(model.Package).filter(model.Package.id == r.package_id).first().name if r else ""
+                # package_name = r.resource_group.package.name if r else ""
 
                 if package_name:
+                    log.info(package_name)
                     data[package_name] = data.get(package_name, 0) + int(result[1])
                 else:
                     resources_not_matched.append(url)
@@ -651,8 +679,9 @@ class DownloadAnalytics(object):
 
         result_data = results.get('rows')
         data = {}
-        for result in result_data:
-            data[result[0]] = data.get(result[0], 0) + int(result[2])
+        if results is not None:
+            for result in result_data:
+                data[result[0]] = data.get(result[0], 0) + int(result[2])
         ga_model.update_sitewide_stats(period_name, "Mobile brands", data, period_complete_day)
 
         data = {}
