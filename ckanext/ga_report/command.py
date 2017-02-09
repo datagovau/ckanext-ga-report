@@ -122,5 +122,5 @@ class LoadAnalytics(CkanCommand):
             downloader.latest()
         else:
             # The month to use
-            for_date = datetime.datetime.strptime(time_period, '%Y-%m')
+            for_date = datetime.datetime.strptime(time_period, '%Y-%m-%d')
             downloader.specific_month(for_date)
