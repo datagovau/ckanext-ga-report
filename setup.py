@@ -20,8 +20,9 @@ setup(
 	include_package_data=True,
 	zip_safe=False,
 	install_requires=[
-		'gdata',
-		'google-api-python-client'
+	    'gdata',
+	    'google-api-python-client',
+            'pyOpenSSL'
 	],
 	entry_points=\
 	"""
@@ -32,7 +33,6 @@ setup(
         [paste.paster_command]
         loadanalytics = ckanext.ga_report.command:LoadAnalytics
         initdb = ckanext.ga_report.command:InitDB
-        getauthtoken = ckanext.ga_report.command:GetAuthToken
         fixtimeperiods = ckanext.ga_report.command:FixTimePeriods
 	""",
 )

@@ -32,7 +32,7 @@ Installation
 
       googleanalytics.id = UA-1010101-1
       googleanalytics.account = Account name (e.g. data.gov.uk, see top level item at https://www.google.com/analytics)
-      googleanalytics.token.filepath = ~/pyenv/token.dat
+      googleanalytics.token.filepath = ~/pyenv/credentials.json
       ga-report.period = monthly
       ga-report.bounce_url = /
 
@@ -62,30 +62,18 @@ Before you can access the data, you need to set up the OAUTH details which you c
 
 2. Sign-in and create a project or use an existing project.
 
-3. In the `Services pane <https://code.google.com/apis/console#:services>`_ , activate Analytics API for your project. If prompted, read and accept the terms of service.
+3. In the `Service accounts pane <https://console.developers.google.com/iam-admin/serviceaccounts>`_ choose your project and create new account. During creation check "Furnish a new private key" -> JSON type. Write down "Service account ID"(looks like email) - it will be used later.
 
-4. Go to the `API Access pane <https://code.google.com/apis/console/#:access>`_
+4. Save downloaded file - it will be used by `loadanalytics` command(referenced as <credentials.json>)
 
-5. Click Create an OAuth 2.0 client ID....
+5. Go to `GoogleAnalytics console <https://analytics.google.com/analytics/web/#management>`_ and chose ADMIN tab.
 
-6. Fill out the Branding Information fields and click Next.
-
-7. In Client ID Settings, set Application type to Installed application.
-
-8. Click Create client ID
-
-9. The details you need below are Client ID, Client secret, and  Redirect URIs
+6. Find "User management" button in corresponding column. Add service account using Service account ID(email) generated in 3rd step and grant "Read" role to it.
 
 
-Once you have set up your credentials.json file you can generate an oauth token file by using the
-following command, which will store your oauth token in a file called token.dat once you have finished
-giving permission in the browser::
+Now ensure you reference the correct path to your credentials.json in your CKAN config file (e.g. development.ini)::
 
-    $ paster getauthtoken --config=../ckan/development.ini
-
-Now ensure you reference the correct path to your token.dat in your CKAN config file (e.g. development.ini)::
-
-    googleanalytics.token.filepath = ~/pyenv/token.dat
+    googleanalytics.token.filepath = ~/pyenv/credentials.json
 
 
 Tutorial
