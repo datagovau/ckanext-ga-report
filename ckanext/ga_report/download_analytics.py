@@ -21,14 +21,13 @@ FORMAT_MONTH = '%Y-%m'
 class DownloadAnalytics(object):
     '''Downloads and stores analytics info'''
 
-    def __init__(self, service=None, token=None, profile_id=None, delete_first=False,
+    def __init__(self, service=None, profile_id=None, delete_first=False,
                  skip_url_stats=False):
         self.period = config['ga-report.period']
         self.service = service
         self.profile_id = profile_id
         self.delete_first = delete_first
         self.skip_url_stats = skip_url_stats
-        self.token = token
 
     global host_re
     host_re = None
@@ -176,10 +175,6 @@ class DownloadAnalytics(object):
         sort = '-ga:entrances'
 
         try:
-            # Because of issues of invalid responses, we are going to make these requests
-            # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
-
             args = dict(ids='ga:' + self.profile_id,
                         filters=query,
                         metrics=metrics,
@@ -329,7 +324,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = {}
             args["max-results"] = 100000
@@ -361,7 +355,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = {}
             args["max-results"] = 100000
@@ -398,7 +391,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = {}
             args["max-results"] = 100000
@@ -437,7 +429,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = {}
             args["max-results"] = 100000
@@ -541,7 +532,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
                         metrics='ga:pageviews',
@@ -569,7 +559,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
                         metrics='ga:pageviews',
@@ -603,7 +592,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
                         metrics='ga:pageviews',
@@ -661,7 +649,6 @@ class DownloadAnalytics(object):
         try:
             # Because of issues of invalid responses, we are going to make these requests
             # ourselves.
-            headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
                         metrics='ga:pageviews',
