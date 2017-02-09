@@ -284,7 +284,7 @@ class DownloadAnalytics(object):
         try:
             from ga_auth import init_service
 
-            self.token, svc = init_service(ga_token_filepath, None)
+            self.token, svc = init_service(ga_token_filepath)
             log.info("OAuth token refreshed")
         except Exception, auth_exception:
             log.error("Oauth refresh failed")
