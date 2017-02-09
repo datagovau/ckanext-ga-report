@@ -284,7 +284,7 @@ class DownloadAnalytics(object):
         try:
             from ga_auth import init_service
 
-            self.token, svc = init_service(ga_token_filepath)
+            self.service = init_service(ga_token_filepath)
             log.info("OAuth token refreshed")
         except Exception, auth_exception:
             log.error("Oauth refresh failed")
@@ -292,8 +292,7 @@ class DownloadAnalytics(object):
             return
 
         try:
-            headers = {'authorization': 'Bearer ' + self.token}
-            r = requests.get("https://www.googleapis.com/analytics/v3/data/ga", params=params, headers=headers)
+            r = self.service.data().ga().get(params=params)
             if r.status_code != 200:
                 log.info("STATUS: %s" % (r.status_code,))
                 log.info("CONTENT: %s" % (r.content,))
