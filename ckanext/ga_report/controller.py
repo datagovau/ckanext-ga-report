@@ -437,10 +437,13 @@ def _to_rickshaw(data, percentageMode=False):
     data = []
     for series in raw_data:
         for point in series['data']:
-            percentage = (100*float(point['y'])) / totals[point['x']]
-            if not (series in data) and percentage>THRESHOLD:
-                data.append(series)
-            point['y'] = percentage
+            try:
+                percentage = (100*float(point['y'])) / totals[point['x']]
+                if not (series in data) and percentage>THRESHOLD:
+                    data.append(series)
+                point['y'] = percentage
+            except:
+                pass
     others = [ x for x in raw_data if not (x in data) ]
     if len(others):
         data_other = []
