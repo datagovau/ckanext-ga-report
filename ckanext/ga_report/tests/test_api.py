@@ -20,7 +20,7 @@ class TestAPI:
         pass
 
     def test_latest(self):
-        svc = init_service("token.dat", "credentials.json")
+        svc = init_service("credentials.json")
         try:
             downloader = DownloadAnalytics(svc, profile_id=get_profile_id(svc))
             downloader.latest()
@@ -29,7 +29,7 @@ class TestAPI:
 
 
     def test_since(self):
-        svc = init_service("token.dat", "credentials.json")
+        svc = init_service("credentials.json")
         downloader = DownloadAnalytics(svc, profile_id=get_profile_id(svc))
         try:
             downloader.for_date(datetime.datetime.now() - datetime.timedelta(days=-30))
