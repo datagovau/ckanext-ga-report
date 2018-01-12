@@ -5,7 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from pylons import config
 
 
-def _prepare_credentials(token_filename, credentials_filename):
+def _prepare_credentials(credentials_filename):
     """
     Either returns the user's oauth credentials or uses the credentials
     file to generate a token (by forcing the user to login in the browser)
@@ -19,7 +19,7 @@ def _prepare_credentials(token_filename, credentials_filename):
     return credentials
 
 
-def init_service(token_file, credentials_file):
+def init_service(credentials_file):
     """
     Given a file containing the user's oauth token (and another with
     credentials in case we need to generate the token) will return a
@@ -27,10 +27,10 @@ def init_service(token_file, credentials_file):
     """
     http = httplib2.Http()
 
-    credentials = _prepare_credentials(token_file, credentials_file)
+    credentials = _prepare_credentials(credentials_file)
     http = credentials.authorize(http)  # authorize the http object
 
-    return credentials.access_token, build('analytics', 'v3', http=http)
+    return credentials.get_access_token().access_token, build('analytics', 'v3', http=http)
 
 
 def get_profile_id(service):
@@ -55,6 +55,9 @@ def get_profile_id(service):
     for acc in accounts.get('items'):
         if acc.get('name') == accountName:
             accountId = acc.get('id')
+            break
+        else:
+            raise Exception('Account did not match. Check `googleanalytics.account`')
 
     webproperties = service.management().webproperties().list(accountId=accountId).execute()
 
