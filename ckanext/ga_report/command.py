@@ -104,8 +104,8 @@ class LoadAnalytics(CkanCommand):
             return
 
         try:
-            self.token, svc = init_service(ga_token_filepath, None)
-        except TypeError:
+            self.token, svc = init_service(ga_token_filepath)
+        except TypeError as e:
             print ('Have you correctly run the getauthtoken task and '
                    'specified the correct token file in the CKAN config under '
                    '"googleanalytics.token.filepath"?')
