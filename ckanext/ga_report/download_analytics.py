@@ -260,16 +260,6 @@ class DownloadAnalytics(object):
                 'Google Analytics token file under key: googleanalytics.token.filepath'
             return
 
-        log.info("Trying to refresh our OAuth token")
-        try:
-            from ga_auth import init_service
-            self.token, svc = init_service(ga_token_filepath)
-            log.info("OAuth token refreshed")
-        except Exception, auth_exception:
-            log.error("Oauth refresh failed")
-            log.exception(auth_exception)
-            return
-
         try:
             headers = {'authorization': 'Bearer ' + self.token}
             r = requests.get(
