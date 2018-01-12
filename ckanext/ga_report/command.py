@@ -30,30 +30,6 @@ class InitDB(CkanCommand):
         log.info("DB tables are setup")
 
 
-class GetAuthToken(CkanCommand):
-    """ Get's the Google auth token
-
-    Usage: paster getauthtoken <credentials_file>
-
-    Where <credentials_file> is the file name containing the details
-    for the service (obtained from https://code.google.com/apis/console).
-    By default this is set to credentials.json
-    """
-    summary = __doc__.split('\n')[0]
-    usage = __doc__
-    max_args = 0
-    min_args = 0
-
-    def command(self):
-        """
-        In this case we don't want a valid service, but rather just to
-        force the user through the auth flow. We allow this to complete to
-        act as a form of verification instead of just getting the token and
-        assuming it is correct.
-        """
-        from ga_auth import init_service
-        init_service('token.dat', 'credentials.json')
-
 class FixTimePeriods(CkanCommand):
     """
     Fixes the 'All' records for GA_Urls
@@ -128,8 +104,8 @@ class LoadAnalytics(CkanCommand):
             return
 
         try:
-            self.token, svc = init_service(ga_token_filepath, None)
-        except TypeError:
+            self.token, svc = init_service(ga_token_filepath)
+        except TypeError as e:
             print ('Have you correctly run the getauthtoken task and '
                    'specified the correct token file in the CKAN config under '
                    '"googleanalytics.token.filepath"?')
