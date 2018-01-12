@@ -1,10 +1,7 @@
-import os
 import httplib2
 from apiclient.discovery import build
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.file import Storage
-from oauth2client.tools import run
 
+from oauth2client.service_account import ServiceAccountCredentials
 from pylons import config
 
 
@@ -13,15 +10,12 @@ def _prepare_credentials(token_filename, credentials_filename):
     Either returns the user's oauth credentials or uses the credentials
     file to generate a token (by forcing the user to login in the browser)
     """
-    storage = Storage(token_filename)
-    credentials = storage.get()
-
-    if credentials is None or credentials.invalid:
-        flow = flow_from_clientsecrets(credentials_filename,
-                scope='https://www.googleapis.com/auth/analytics.readonly',
-                message="Can't find the credentials file")
-        credentials = run(flow, storage)
-
+    
+    scope = ['https://www.googleapis.com/auth/analytics.readonly']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        credentials_filename,
+        scopes=scope
+    )    
     return credentials
 
 
