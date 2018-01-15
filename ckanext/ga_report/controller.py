@@ -389,10 +389,10 @@ class GaDatasetReport(BaseController):
         entry = q.filter(GA_Url.period_name==c.month).first()
         c.publisher_page_views = entry.pageviews if entry else 0
 
-        c.top_packages = self._get_packages(publisher=c.publisher, count=20, month=c.month)
+        c.top_packages = self._get_packages(publisher=c.publisher, count=50, month=c.month)
 
         # Graph query
-        top_packages_all_time = self._get_packages(publisher=c.publisher, count=20, month='All')
+        top_packages_all_time = self._get_packages(publisher=c.publisher, count=50, month='All')
         top_package_names = [ x[0].name for x in top_packages_all_time ]
         graph_query = model.Session.query(GA_Url,model.Package)\
             .filter(model.Package.name==GA_Url.package_id)\
