@@ -1,250 +1,249 @@
-<html
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:i18n="http://genshi.edgewall.org/i18n"
-  xmlns:py="http://genshi.edgewall.org/"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  py:strip=""
-  >
-
-  <div py:def="markdown_editor(fieldname,value,id,placeholder)" class="markdown-editor">
+{% macro markdown_editor(fieldname,value,id,placeholder) %}
+  <div class="markdown-editor">
     <ul class="button-row">
       <li><button class="btn js-markdown-edit depressed">Edit</button></li>
       <li><button class="btn js-markdown-preview">Preview</button></li>
-    </ul>
-    <div>
-      <textarea class="markdown-input" name="${fieldname}" id="${id}" placeholder="${placeholder}">${value}</textarea>
-    </div>
-    <div class="markdown-preview" style="display: none;"></div>
-    <span class="hints">You can use <a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown formatting</a> here.</span>
-  </div>
-
-  <!--! Herein can be found generic helper methods for a whole bunch of common
-        templating issues -->
-
-  <!--! plural(n, s, p): takes a number, a singular form and a plural form,
-        returning the appropriate form on the basis of the number specified -->
-  <py:def function="plural(num, s, p)" py:choose="num">
-    <py:when test="1">${s}</py:when>
-    <py:otherwise>${p}</py:otherwise>
-  </py:def>
-
-  <!--! nonempty(val, default): takes a variable string, and returns it or a
-        fallback 'default' string if it's blank -->
-  <py:def function="nonempty(val, default)" py:choose="val">
-    <py:when test="str(val).strip()">${val}</py:when>
-    <py:otherwise>${default}</py:otherwise>
-  </py:def>
-
-  <!--! List of tags: pass in a collection of tags and this renders the standard
-        tag listing -->
-  <ul py:def="tag_list(tags)" class="tags clearfix">
-    <py:for each="tag in tags">
-    <li py:if="not tag.get('vocabulary_id')">
-      ${h.link_to(tag['display_name'], h.url_for(controller='tag', action='read', id=tag['name']))}
-    </li>
-    </py:for>
   </ul>
+  <div>
+    <textarea class="markdown-input" name="{{fieldname}}" id="{{id}}" placeholder="{{placeholder}}">{{value}}</textarea>
+  </div>
+  <div class="markdown-preview" style="display: none;"></div>
+  <span class="hints">You can use <a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown formatting</a> here.</span>
+</div>
+{% endmacro %}
 
-  <!--! List of users: pass in a collection of users and this renders the standard
-          user listing -->
-    <ul py:def="user_list(users)" class="users">
-      <li py:for="user in users">
-        ${h.linked_user(user)}
+<!--! Herein can be found generic helper methods for a whole bunch of common
+templating issues -->
+<!--! plural(n, s, p): takes a number, a singular form and a plural form,
+returning the appropriate form on the basis of the number specified -->
+{% macro plural(num, s, p) %}
+  {% if num == 1 %}
+    {{s}}
+  {% else %}
+    {{p}}
+  {% endif %}
+{% endmacro %}
+
+<!--! nonempty(val, default): takes a variable string, and returns it or a
+fallback 'default' string if it's blank -->
+{% macro nonempty(val, default) %}
+  {% if str(val).strip() %}
+    {{val}}
+  {% else %}
+    {{default}}
+  {% endif %}
+{% endmacro %}
+
+<!--! List of tags: pass in a collection of tags and this renders the standard
+tag listing -->
+{% macro tag_list(tags) %}
+  <ul class="tags clearfix">
+    {% for tag in tags %}
+      {% if not h.get_key_helper(tag, 'vocabulary_id') %}
+        <li>
+          {{h.link_to(tag['display_name'], h.url_for(controller='tag', action='read', id=tag['name']))}}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+<!--! List of users: pass in a collection of users and this renders the standard
+user listing -->
+{% macro user_list(users) %}
+  <ul class="users">
+    {% for user in users %}
+      <li>
+        {{h.linked_user(user)}}
       </li>
-    </ul>
+    {% endfor %}
+  </ul>
+{% endmacro %}
 
-  <!--! List of datasets: pass in a collection of tags and this renders the
-        standard dataset listing -->
-  <py:def function="package_list(packages)">
-	  ${package_list_from_dict(h.convert_to_dict('package', packages))}
-  </py:def>
+<!--! List of datasets: pass in a collection of tags and this renders the
+standard dataset listing -->
+{% macro package_list(packages) %}
+  {{package_list_from_dict(h.convert_to_dict('package', packages))}}
+{% endmacro %}
 
-  <py:def function="package_list_from_dict(packages)">
-	${h.snippet('snippets/package_list.html', packages=packages)}
-  </py:def>
+{% macro package_list_from_dict(packages) %}
+  {{h.snippet('snippets/package_list.html', packages=packages)}}
+{% endmacro %}
 
-  <!--! List of dataset groups: pass in a collection of dataset groups
-        and this renders the standard group listing -->
-  <table class="table table-bordered table-striped table-condensed groups" py:def="group_list(groups)">
+<!--! List of dataset groups: pass in a collection of dataset groups
+and this renders the standard group listing -->
+{% macro group_list(groups) %}
+  <table class="table table-bordered table-striped table-condensed groups">
     <tr><th>Title</th><th>Number of datasets</th><th>Description</th></tr>
-    <py:for each="group in groups">
-    <tr>
-      <td><a href="${h.url_for(controller='group', action='read', id=group.name)}">${group.display_name}</a></td>
-      <td>${len(group.packages)}</td>
-      <td>${h.truncate(group.description, length=80, whole_word=True)}</td>
-    </tr>
-    </py:for>
-  </table>
+    {% for group in groups %}
+      <tr>
+        <td><a href="{{h.url_for(controller='group', action='read', id=group.name)}}">{{group.display_name}}</a></td>
+        <td>{{len(group.packages)}}</td>
+        <td>{{h.truncate(group.description, length=80, whole_word=True)}}</td>
+      </tr>
+    {% endfor %}
+    </table>
+{% endmacro %}
 
-  <!--! List of dataset groups: pass in a collection of dataset groups
-        and this renders the standard group listing. Same as the above, but using dictionaries -->
-  <table class="table table-bordered table-striped table-condensed groups" py:def="group_list_from_dict(groups)">
+<!--! List of dataset groups: pass in a collection of dataset groups
+and this renders the standard group listing. Same as the above, but using dictionaries -->
+{% macro group_list_from_dict(groups) %}
+  <table class="table table-bordered table-striped table-condensed groups">
     <tr><th>Title</th><th>Number of datasets</th><th>Description</th></tr>
-    <py:for each="group in groups">
-    <tr>
-      <td><a href="${h.url_for( '%s_read' % str(group['type'])  , action='read', id=group['name'])}">${group['display_name']}</a></td>
-      <td>${group['packages']}</td>
-      <td>${h.truncate(group['description'], length=80, whole_word=True)}</td>
-    </tr>
-    </py:for>
+    {% for group in groups %}
+      <tr>
+        <td><a href="{{h.url_for( '%s_read' % str(group['type'])  , action='read', id=group['name'])}}">{{group['display_name']}}</a></td>
+        <td>{{group['packages']}}</td>
+        <td>{{h.truncate(group['description'], length=80, whole_word=True)}}</td>
+      </tr>
+    {% endfor %}
   </table>
+{% endmacro %}
 
-  <!--! Dataset openness icons -->
-  <img py:def="package_license_icon(package)"
-    src="${h.url_for('/images/icons/door_%s.png' % 'open' if package.isopen() else 'grey')}"
-    title="License: ${package.license.title if hasattr(package.license, 'title') else '?'}"
-    alt="${'OPEN' if package.isopen() else 'CLOSED'}" />
+<!--! Dataset openness icons -->
+{% macro package_license_icon(package) %}
+  <img {% if package.isopen() %} src="{{h.url_for('/images/icons/door_%s.png' % 'open')}}" {% else %} src="{{h.url_for('/images/icons/door_%s.png' % 'grey')}}" {% endif %}
+    title="License: {{package.license.title}}"
+    {% if package.isopen() %}
+    alt="'OPEN'" {% else %} alt="'CLOSE'" {% endif %} />
+{% endmacro %}
 
-  <py:def function="package_resources_icon(package)" py:choose="">
-    <a py:when="package.resources"
-       href="${h.url_for(controller='package', action='read', id=package.name, anchor='resources')}">
-      <img src="${h.icon_url('arrow_down')}" title="View dataset resources" alt="DOWNLOAD" />
+{% macro package_resources_icon(package) %}
+  {% if package.resources %}
+    <a  href="{{h.url_for(controller='package', action='read', id=package.name, anchor='resources')}}">
+      <img src="{{h.icon_url('arrow_down')}}" title="View dataset resources" alt="DOWNLOAD" />
     </a>
+  {% else %}
+    <img src="{{h.icon_url('arrow_down_grey')}}" title="No downloadable resources." alt="" />
+  {% endif %}
+{% endmacro %}
 
-    <img py:otherwise="" src="${h.icon_url('arrow_down_grey')}" title="No downloadable resources." alt="" />
-  </py:def>
-
-  <py:def function="resource_summary(pkg, res)">
-      <a href="${h.url_for(controller='package', action='resource_read', id=pkg.id, resource_id=res.id)}">
-         ${h.resource_display_name(res)}
+{% macro esource_summary(pkg, res) %}
+  <a href="{{h.url_for(controller='package', action='resource_read', id=pkg.id, resource_id=res.id)}}">
+    {{h.resource_display_name(res)}}
+  </a>
+{% endmacro %}
+  
+{% macro related_summary(related, allow_delete) %}
+  <li id="related-item-{{related.id}}" class="span3">
+    <div class="thumbnail">
+      {% if allow_delete and h.check_access('related_delete',{'id': '%s' % related.id}) %}
+        <button class="close" data-action="delete" data-related-id="{{related.id}}">×</button>
+      {% endif %}
+      <a href="{{h.url_for('related_read', id=related.id)}}" class="image">
+        {% if related.image_url %}
+          <img src="{{related.image_url}}" width="210" />
+        {% else %}
+          <img src="/images/photo-placeholder.png" width="210" />
+        {% endif %}
       </a>
-  </py:def>
-
-
-  <py:def function="related_summary(related, allow_delete)">
-  <li id="related-item-${related.id}" class="span3">
-      <div class="thumbnail">
-        <button py:if="allow_delete and h.check_access('related_delete',{'id': '%s' % related.id})" class="close" data-action="delete" data-related-id="${related.id}">×</button>
-        <a href="${h.url_for('related_read', id=related.id)}" class="image">
-          <img src="${related.image_url}" width="210" py:if="related.image_url" />
-          <img src="/images/photo-placeholder.png" width="210" py:if="not related.image_url" />
-        </a>
-        <span style="display:none;">${related.view_count}</span>
-        <div class="caption">
-          <h5 class="heading" title="${related.title}">${h.markdown_extract(related.title, extract_length=30)}</h5>
-          <div class="description" data-truncate="55" py:if="related.description">${h.markdown_extract(related.description, extract_length=1000)}</div>
-          <i class="empty" py:if="not related.description">No description for this item</i>
-          <p class="read-more"><a href="${h.url_for('related_read', id=related.id)}">View this ${related.type}</a></p>
-        </div>
+      <span style="display:none;">{{related.view_count}}</span>
+      <div class="caption">
+        <h5 class="heading" title="{{related.title}}">{{h.markdown_extract(related.title, extract_length=30)}}</h5>
+        {% if related.description %}
+          <div class="description" data-truncate="55">{{h.markdown_extract(related.description, extract_length=1000)}}</div>
+        {% else %}
+          <i class="empty">No description for this item</i>
+        {% endif %}
+        <p class="read-more"><a href="{{h.url_for('related_read', id=related.id)}}">View this {{related.type}}</a></p>
       </div>
-    </li>
-  </py:def>
-
-
-  <!--! Used by group listing -->
-  <py:def function="package_summary(pkg)">
-      <a href="${h.url_for(controller='package', action='read', id=pkg.name)}">
-         ${pkg.name} - ${pkg.title}
-      </a>
-  </py:def>
-
-  <div py:def="package_rating(pkg)" class="rating-group">
-    <py:choose test="">
-      <div py:when="c.num_ratings" class="inline-rating">
-        <ul class="stars default${'%i' % (c.current_rating or 0)}star">
-          <li class="${name}" py:for="number,name in enumerate(['one', 'two', 'three', 'four', 'five'])"></li>
-        </ul>
-        ${'%0.1f (%i rating%s)' % (c.current_rating, c.num_ratings, ('s' if c.num_ratings != 1 else ''))}
-      </div>
-      <py:otherwise>no ratings yet</py:otherwise>
-    </py:choose>
-
-    &ndash;
-    rate it now
-
-    <div class="inline-rating">
-    <ul class="stars default0star">
-      <py:for each="number,name in zip(range(1,6), ['one', 'two', 'three', 'four', 'five'])">
-      <li class="${name}">
-      <a href="${h.url_for(controller='package',action='rate',id=c.pkg.name,rating=number)}" title="${number} Star">${number}</a>
-      </li>
-      </py:for>
-    </ul>
     </div>
-  </div><!--! /rating-group -->
+  </li>
+{% endmacro %}
 
-  <table class="table table-bordered table-striped table-condensed" py:def="authz_form_table(id, roles, users, user_role_dict)">
+<!--! Used by group listing -->
+{% macro package_summary(pkg) %}
+  <a href="{{h.url_for(controller='package', action='read', id=pkg.name)}}">
+    {{pkg.name}} - {{pkg.title}}
+  </a>
+{% endmacro %}
+  
+  {% macro package_rating(pkg) %}
+    <div class="rating-group">
+        {% if c.num_ratings %}
+            <div class="inline-rating">
+                <ul class="stars default{{'%i' % (c.current_rating or 0)}}star">
+                    {% for number,name in ['one', 'two', 'three', 'four', 'five'] %}
+                        <li class="{{name}}"></li>
+                    {% endfor %}
+                </ul>
+                {{'%0.1f (%i rating%s)' % (c.current_rating, c.num_ratings, ('s' if c.num_ratings != 1 else ''))}}
+            </div>
+        {% else %}
+            no ratings yet
+        {% endif %}
+        &ndash;
+        rate it now
+        <div class="inline-rating">
+            <ul class="stars default0star">
+                {% for number,name in zip(range(1,6), ['one', 'two', 'three', 'four', 'five']) %}
+                    <li class="{{name}}">
+                        <a href="{{h.url_for(controller='package',action='rate',id=c.pkg.name,rating=number)}}" title="{{number}} Star">{{number}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div><!--! /rating-group -->
+{% endmacro %}
+  
+{% macro authz_form_table(id, roles, users, user_role_dict) %}
+  <table class="table table-bordered table-striped table-condensed">
     <tr>
       <th> User </th>
-      <py:for each="role in roles">
-      <th> ${role} </th>
-      </py:for>
+      {% for role in roles %}
+        <th> {{role}} </th>
+      {% endfor %}
     </tr>
-    <py:for each="user in users">
+    {% for user in users %}
       <tr>
         <td>
-          ${h.linked_user(user)}
+          {{h.linked_user(user)}}
         </td>
-        <py:for each="role in roles">
+        {% for role in roles %}
           <td>
-            <input type="hidden" name="${ h.literal( '%s$%s' % (user,role)) }" value="submitted"/>
-            <py:choose>
-              <py:when test="user_role_dict[(user,role)]">
-                <input type="checkbox"
-                   name="${ h.literal( '%s$%s' % (user,role)) }"
-                   checked='checked'/>
-              </py:when>
-              <py:otherwise>
-                <input type="checkbox"
-                       name="${ h.literal( '%s$%s' % (user,role)) }"
-                       />
-              </py:otherwise>
-            </py:choose>
+            <input type="hidden" name="{{ h.literal( '%s$%s' % (user,role)) }}" value="submitted"/>
+            {% if user_role_dict[(user,role)] %}
+              <input type="checkbox"
+                name="{{ h.literal( '%s$%s' % (user,role)) }}"
+              checked='checked'/>
+            {% else %}
+              <input type="checkbox"
+                name="{{ h.literal( '%s$%s' % (user,role)) }}"
+              />
+            {% endif %}
           </td>
-        </py:for>
+        {% endfor %}
       </tr>
-    </py:for>
+    {% endfor %}
   </table>
-
-
-
-  <table class="table table-bordered table-striped table-condensed" py:def="authz_add_table(roles)">
+{% endmacro %}
+  
+{% macro authz_add_table(roles)%}
+  <table class="table table-bordered table-striped table-condensed">
     <tr>
       <th>User</th>
-      <py:for each="role in roles">
-       <th> ${role} </th>
-     </py:for>
+      {% for role in roles %}
+        <th> {{role}} </th>
+      {% endfor %}
     </tr>
     <tr>
       <td>
         <input type="textbox" name="new_user_name" class="autocomplete-user" />
       </td>
-      <py:for each="role in roles">
+      {% for role in roles %}
         <td>
-          <input type="hidden" name="${ h.literal( '%s' % role) }" value="submitted"/>
-          <input type="checkbox" name="${ h.literal( '%s' % role) }"/>
+          <input type="hidden" name="{{ h.literal( '%s' % role) }}" value="submitted"/>
+          <input type="checkbox" name="{{ h.literal( '%s' % role) }}"/>
         </td>
-      </py:for>
+      {% endfor %}
     </tr>
   </table>
+{% endmacro %}
 
-
-  <py:def function="revision_list(revisions, allow_compare=False)">
-	${revision_list_from_dict(h.convert_to_dict('revisions', revisions), allow_compare=allow_compare)}
-  </py:def>
-
-  <py:def function="revision_list_from_dict(revisions, allow_compare=False)">
-    ${h.snippet('snippets/revision_list.html', revisions=revisions, allow_compare=allow_compare)}
-  </py:def>
-
-
-  <!--! jsConditionalForIe(ieVersion, tagContent, matchOperator): takes a
-        IE version number, a tag or other HTML code that will be wrapped inside
-        a IE conditional comment, and the comparison operator (lt, lte, etc..
-        see http://msdn.microsoft.com/en-us/library/ms537512%28v=vs.85%29.aspx)
-        returning Genshi stream ready to be shown in a template.
-
-        NOTE:
-        Internet Explorer Conditional Import are confused as Genshi comments
-        and python variables and method calls are not executed if inside them.
-        This function helps to output tags with Python code inside conditional
-        comments, eg ${h.url_for_static()} -->
-  <?python
-    from genshi import HTML
-    def jsConditionalForIe(ieVersion, tagContent, matchOperator = 'lt'):
-      html = HTML('<!--[if ' + matchOperator +  ' IE ' + str(ieVersion) + ''']>
-                     ''' + tagContent + '''
-                   <![endif]-->''')
-      return html
-  ?>
-</html>
+{% macro revision_list(revisions, allow_compare=False) %}
+  {{revision_list_from_dict(h.convert_to_dict('revisions', revisions), allow_compare=allow_compare)}}
+{% endmacro %}
+  
+{% macro revision_list_from_dict(revisions, allow_compare=False) %}
+  {{h.snippet('snippets/revision_list.html', revisions=revisions, allow_compare=allow_compare)}}
+{% endmacro %}

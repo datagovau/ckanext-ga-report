@@ -7,6 +7,9 @@ from ckan.logic import get_action
 
 from ckanext.ga_report.ga_model import GA_Url, GA_Publisher
 from ckanext.ga_report.controller import _get_publishers
+
+from pylons import config
+
 _log = logging.getLogger(__name__)
 
 def popular_datasets(count=10):
@@ -144,4 +147,17 @@ def month_option_title(month_iso, months, day):
         return month_name + (' (up to %s)'%day)
     return month_name
 
+def join_x(graph):
+    return ','.join([x for x,y in graph])
 
+def join_y(graph):
+    return ','.join([y for x,y in graph])
+
+def config_get(param, default):
+    return config.get(param, default)
+
+def get_key_helper(d, key):
+    return d.get(key)
+
+def get_plugins_js_string():
+    return ['\'%s\', '%s  for s in config.get('ckan.plugins','').split(' ')]
