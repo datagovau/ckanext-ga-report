@@ -265,7 +265,6 @@
       <script type="text/javascript" src="{{h.url_for_static('/scripts/templates.js')}}"></script>
       <script type="text/javascript">
         CKAN.plugins = {{ h.get_plugins_js_string() }};
-        console.log(CKAN.plugins)
         {% if h.asbool(h.config_get('ckan.storage.bucket', 'false')) %}
           CKAN.plugins.push('storage');
         {% endif %}
