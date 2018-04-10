@@ -265,7 +265,7 @@
       <script type="text/javascript" src="{{h.url_for_static('/scripts/templates.js')}}"></script>
       <script type="text/javascript">
         CKAN.plugins = {{ h.get_plugins_js_string() }};
-        {% if h.asbool(h.config_get('ckan.storage.bucket', 'false')) %}
+        {% if h.config_get('ckan.storage.bucket', '') %}
           CKAN.plugins.push('storage');
         {% endif %}
         CKAN.SITE_URL = '{{h.url('/')}}';
