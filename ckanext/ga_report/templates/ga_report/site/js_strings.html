@@ -1,19 +1,14 @@
-<script type="text/javascript"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:py="http://genshi.edgewall.org/"
-  >
-
-  /* 
-   * Included as inline javascript in layout_base.html. Simpler than 
-   * trying to trick the translation system into reading a js file. 
-   */
+<script type="text/javascript">
+  /*
+  * Included as inline javascript in layout_base.html. Simpler than
+  * trying to trick the translation system into reading a js file.
+  */
   var CKAN = CKAN || {};
   CKAN.Strings = CKAN.Strings || {};
-
   /*
-   * Used in application.js.
-   */
-  CKAN.Strings = ${
+  * Used in application.js.
+  */
+  CKAN.Strings = {{
     h.dump_json(dict(
       checking = _('Checking...'),
       urlIsTooShort = _('Type at least two characters...'),
@@ -39,7 +34,6 @@
       documentation = _('Documentation'),
       code = _('Code'),
       example = _('Example'),
-
       upload = _('Upload'),
       cancel = _('Cancel'),
       name = _('Name'),
@@ -74,7 +68,6 @@
       errorLoadingPreview = _('Could not load preview'),
       errorDataProxy = _('DataProxy returned an error'),
       errorDataStore = _('DataStore returned an error')
-    ), indent=4)}
-
+    ), indent=4)
+  }}
 </script>
-
