@@ -6,9 +6,7 @@
 {% import "/ga_report/site/_util.html" as u with context %}
   <head>
     <meta charset="utf-8" />
-    {% if request.user_agent.find('MSIE') != -1 %}
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    {% endif %}
     <title>
       {% block page_title %}
         {{g.site_title}}
