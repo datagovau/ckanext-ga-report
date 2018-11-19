@@ -158,8 +158,8 @@ class DownloadAnalytics(object):
                         dimensions="ga:landingPagePath,ga:socialNetwork",
                         max_results=10000)
 
-            args['start-date'] = start_date
-            args['end-date'] = end_date
+            args['start_date'] = start_date
+            args['end_date'] = end_date
 
             results = self._get_json(args)
         except Exception, e:
@@ -187,14 +187,14 @@ class DownloadAnalytics(object):
         try:
             args = {}
             args["sort"] = "-ga:pageviews"
-            args["max-results"] = 100000
+            
             args["dimensions"] = "ga:pagePath"
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["metrics"] = metrics
             args["ids"] = "ga:" + self.profile_id
             args["filters"] = query
-            args["alt"] = "json"
+
             print args
             results = self._get_json(args)
 
@@ -261,7 +261,7 @@ class DownloadAnalytics(object):
             return
 
         try:
-            r = self.service.data().ga().get(params=params)
+            r = self.service.data().ga().get(**params)
             if r.status_code != 200:
                 log.info("STATUS: %s" % (r.status_code,))
                 log.info("CONTENT: %s" % (r.content,))
@@ -277,14 +277,14 @@ class DownloadAnalytics(object):
         """ Fetches distinct totals, total pageviews etc """
         try:
             args = {}
-            args["max-results"] = 100000
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
             args["metrics"] = "ga:pageviews"
             args["sort"] = "-ga:pageviews"
-            args["alt"] = "json"
+
 
             results = self._get_json(args)
         except Exception, e:
@@ -298,13 +298,13 @@ class DownloadAnalytics(object):
         try:
 
             args = {}
-            args["max-results"] = 100000
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
             args["metrics"] = "ga:pageviewsPerVisit,ga:avgSessionDuration,ga:percentNewVisits,ga:visits"
-            args["alt"] = "json"
+
 
             results = self._get_json(args)
         except Exception, e:
@@ -326,15 +326,15 @@ class DownloadAnalytics(object):
         try:
 
             args = {}
-            args["max-results"] = 100000
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
             args["filters"] = 'ga:pagePath==%s' % (path,)
             args["dimensions"] = 'ga:pagePath'
             args["metrics"] = "ga:visitBounceRate"
-            args["alt"] = "json"
+
 
             results = self._get_json(args)
         except Exception, e:
@@ -359,15 +359,15 @@ class DownloadAnalytics(object):
         try:
 
             args = {}
-            args["max-results"] = 100000
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
             args["dimensions"] = "ga:language,ga:country"
             args["metrics"] = "ga:pageviews"
             args["sort"] = "-ga:pageviews"
-            args["alt"] = "json"
+
 
             results = self._get_json(args)
         except Exception, e:
@@ -396,15 +396,15 @@ class DownloadAnalytics(object):
         try:
 
             args = {}
-            args["max-results"] = 100000
-            args["start-date"] = start_date
-            args["end-date"] = end_date
+            
+            args["start_date"] = start_date
+            args["end_date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
             args["filters"] = 'ga:eventAction==Download'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
-            args["alt"] = "json"
+
 
             results = self._get_json(args)
         except Exception, e:
@@ -506,8 +506,8 @@ class DownloadAnalytics(object):
                         sort='-ga:pageviews',
                         dimensions="ga:socialNetwork,ga:referralPath",
                         max_results=10000)
-            args['start-date'] = start_date
-            args['end-date'] = end_date
+            args['start_date'] = start_date
+            args['end_date'] = end_date
 
             results = self._get_json(args)
         except Exception, e:
@@ -530,8 +530,8 @@ class DownloadAnalytics(object):
                         sort='-ga:pageviews',
                         dimensions="ga:operatingSystem,ga:operatingSystemVersion",
                         max_results=10000)
-            args['start-date'] = start_date
-            args['end-date'] = end_date
+            args['start_date'] = start_date
+            args['end_date'] = end_date
 
             results = self._get_json(args)
         except Exception, e:
@@ -561,8 +561,8 @@ class DownloadAnalytics(object):
                         dimensions="ga:browser,ga:browserVersion",
                         max_results=10000)
 
-            args['start-date'] = start_date
-            args['end-date'] = end_date
+            args['start_date'] = start_date
+            args['end_date'] = end_date
 
             results = self._get_json(args)
         except Exception, e:
@@ -615,8 +615,8 @@ class DownloadAnalytics(object):
                         sort='-ga:pageviews',
                         dimensions="ga:mobileDeviceBranding, ga:mobileDeviceInfo",
                         max_results=10000)
-            args['start-date'] = start_date
-            args['end-date'] = end_date
+            args['start_date'] = start_date
+            args['end_date'] = end_date
 
             results = self._get_json(args)
         except Exception, e:
