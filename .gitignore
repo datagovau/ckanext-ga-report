@@ -2,7 +2,8 @@
 *.py~
 .gitignore
 ckan.log
-
+*.iml
+.idea
 # Packages
 *.egg
 *.egg-info
