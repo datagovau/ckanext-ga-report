@@ -3,7 +3,7 @@
 
 {% block page_title %}Downloads{% endblock %}
 {% block primary_sidebar_extras %}
-  {{m.ga_sidebar(download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv_downloads',month=c.month or 'all'))}}
+  {#m.ga_sidebar(download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv_downloads',month=c.month or 'all'))#}
 {% endblock %}
 {% block page_heading %}Downloads {{usage_nav('Downloads')}}{% endblock %}
 {% block content %}
