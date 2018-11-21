@@ -32,20 +32,16 @@ Installation
 
       googleanalytics.id = UA-1010101-1
       googleanalytics.account = Account name (e.g. data.gov.uk, see top level item at https://www.google.com/analytics)
-      googleanalytics.token.filepath = ~/pyenv/token.dat
+      googleanalytics.token.filepath = ~/pyenv/credentials.json
       ga-report.period = monthly
       ga-report.bounce_url = /
 
    The ga-report.bounce_url specifies a particular path to record the bounce rate for. Typically it is / (the home page).
 
-3. Set up this extension's database tables using a paster command. (Ensure your CKAN pyenv is still activated, run the command from ``src/ckanext-ga-report``, alter the ``--config`` option to point to your site config file)::
-
-    $ paster initdb --config=../ckan/development.ini
-
-4. Enable the extension in your CKAN config file by adding it to ``ckan.plugins``::
-
-    ckan.plugins = ga-report
-
+3. In the `Service accounts pane <https://console.developers.google.com/iam-admin/serviceaccounts>`_ choose your project and create new account. During creation check "Furnish a new private key" -> JSON type. Write down "Service account ID"(looks like email) - it will be used later.
+4. Save downloaded file - it will be used by `loadanalytics` command(referenced as <credentials.json>)
+5. Go to `GoogleAnalytics console <https://analytics.google.com/analytics/web/#management>`_ and chose ADMIN tab.
+6. Find "User management" button in corresponding column. Add service account using Service account ID(email) generated in 3rd step and grant "Read" role to it.
 Problem shooting
 ----------------
 
