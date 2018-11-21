@@ -11,7 +11,7 @@ from pylons import config
 from ga_model import _normalize_url
 import ga_model
 
-#from ga_client import GA
+# from ga_client import GA
 
 log = logging.getLogger('ckanext.ga-report')
 
@@ -19,6 +19,7 @@ FORMAT_MONTH = '%Y-%m'
 MIN_VIEWS = 50
 MIN_VISITS = 20
 MIN_DOWNLOADS = 10
+
 
 class DownloadAnalytics(object):
     '''Downloads and stores analytics info'''
@@ -37,7 +38,7 @@ class DownloadAnalytics(object):
 
         first_of_this_month = datetime.datetime(date.year, date.month, 1)
         _, last_day_of_month = calendar.monthrange(int(date.year), int(date.month))
-        last_of_this_month =  datetime.datetime(date.year, date.month, last_day_of_month)
+        last_of_this_month = datetime.datetime(date.year, date.month, last_day_of_month)
         # if this is the latest month, note that it is only up until today
         now = datetime.datetime.now()
         if now.year == date.year and now.month == date.month:
@@ -47,7 +48,6 @@ class DownloadAnalytics(object):
                     last_day_of_month,
                     first_of_this_month, last_of_this_month),)
         self.download_and_store(periods)
-
 
     def latest(self):
         if self.period == 'monthly':
@@ -61,10 +61,9 @@ class DownloadAnalytics(object):
             raise NotImplementedError
         self.download_and_store(periods)
 
-
     def for_date(self, for_date):
         assert isinstance(since_date, datetime.datetime)
-        periods = [] # (period_name, period_complete_day, start_date, end_date)
+        periods = []  # (period_name, period_complete_day, start_date, end_date)
         if self.period == 'monthly':
             first_of_the_months_until_now = []
             year = for_date.year
@@ -81,8 +80,8 @@ class DownloadAnalytics(object):
                 elif first_of_the_month < first_of_this_month:
                     in_the_next_month = first_of_the_month + datetime.timedelta(40)
                     last_of_the_month = datetime.datetime(in_the_next_month.year,
-                                                           in_the_next_month.month, 1)\
-                                                           - datetime.timedelta(1)
+                                                          in_the_next_month.month, 1) \
+                                        - datetime.timedelta(1)
                     periods.append((now.strftime(FORMAT_MONTH), 0,
                                     first_of_the_month, last_of_the_month))
                 else:
@@ -102,7 +101,6 @@ class DownloadAnalytics(object):
             return period_name + ' (up to %ith)' % period_complete_day
         else:
             return period_name
-
 
     def download_and_store(self, periods):
         for period_name, period_complete_day, start_date, end_date in periods:
@@ -132,21 +130,19 @@ class DownloadAnalytics(object):
                 data = self.download(start_date, end_date, '~^/organization/[a-z0-9-_]+')
 
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
-                self.store(period_name, period_complete_day, data,)
+                self.store(period_name, period_complete_day, data, )
 
                 # Make sure the All records are correct.
                 ga_model.post_update_url_stats()
 
                 log.info('Associating datasets with their publisher')
-                ga_model.update_publisher_stats(period_name) # about 30 seconds.
-
+                ga_model.update_publisher_stats(period_name)  # about 30 seconds.
 
             log.info('Downloading and storing analytics for site-wide stats')
-            self.sitewide_stats( period_name, period_complete_day )
+            self.sitewide_stats(period_name, period_complete_day)
 
             log.info('Downloading and storing analytics for social networks')
             self.update_social_info(period_name, start_date, end_date)
-
 
     def update_social_info(self, period_name, start_date, end_date):
         start_date = start_date.strftime('%Y-%m-%d')
@@ -161,11 +157,11 @@ class DownloadAnalytics(object):
             headers = {'authorization': 'Bearer ' + self.token}
 
             args = dict(ids='ga:' + self.profile_id,
-                       filters=query,
-                       metrics=metrics,
-                       sort=sort,
-                       dimensions="ga:landingPagePath,ga:socialNetwork",
-                       max_results=10000)
+                        filters=query,
+                        metrics=metrics,
+                        sort=sort,
+                        dimensions="ga:landingPagePath,ga:socialNetwork",
+                        max_results=10000)
 
             args['start-date'] = start_date
             args['end-date'] = end_date
@@ -175,14 +171,12 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
-
         data = collections.defaultdict(list)
-        rows = results.get('rows',[])
+        rows = results.get('rows', [])
         for row in rows:
             url = row[0]
-            data[url].append( (row[1], int(row[2]),) )
+            data[url].append((row[1], int(row[2]),))
         ga_model.update_social(period_name, data)
-
 
     def download(self, start_date, end_date, path=None):
         '''Get data from GA for a given time period'''
@@ -194,7 +188,7 @@ class DownloadAnalytics(object):
 
         # Supported query params at
         # https://developers.google.com/analytics/devguides/reporting/core/v3/reference
-	# https://ga-dev-tools.appspot.com/explorer/
+        # https://ga-dev-tools.appspot.com/explorer/
         try:
             args = {}
             args["sort"] = "-ga:pageviews"
@@ -215,18 +209,18 @@ class DownloadAnalytics(object):
 
         packages = []
         log.info("There are %d results" % results['totalResults'])
-	if results['totalResults'] > 0:
-          for entry in results.get('rows', []):
-            (loc,pageviews,visits) = entry
-            #url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
-            url = loc
-	    #print url
-            if not url.startswith('/dataset/') and not url.startswith('/organization/'):
-                # filter out strays like:
-                # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
-                # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
-                continue
-            packages.append( (url, pageviews, visits,) ) # Temporary hack
+        if results['totalResults'] > 0:
+            for entry in results.get('rows', []):
+                (loc, pageviews, visits) = entry
+                # url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
+                url = loc
+                # print url
+                if not url.startswith('/dataset/') and not url.startswith('/organization/'):
+                    # filter out strays like:
+                    # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open
+                    # /403.html?page=/about&from=http://data.gov.uk/publisher/planning-inspectorate
+                    continue
+                packages.append((url, pageviews, visits,))  # Temporary hack
         return dict(url=packages)
 
     def store(self, period_name, period_complete_day, data):
@@ -250,21 +244,21 @@ class DownloadAnalytics(object):
         data = {}
         for result in result_data:
             key = f(result)
-            data[key] = data.get(key,0) + result[1]
+            data[key] = data.get(key, 0) + result[1]
         return data
 
     def _get_json(self, params, prev_fail=False):
         ga_token_filepath = os.path.expanduser(config.get('googleanalytics.token.filepath', ''))
         if not ga_token_filepath:
             print 'ERROR: In the CKAN config you need to specify the filepath of the ' \
-                'Google Analytics token file under key: googleanalytics.token.filepath'
+                  'Google Analytics token file under key: googleanalytics.token.filepath'
             return
 
         try:
             headers = {'authorization': 'Bearer ' + self.token}
             r = requests.get(
-		    "https://www.googleapis.com/analytics/v3/data/ga",
-		    params=params, headers=headers)
+                "https://www.googleapis.com/analytics/v3/data/ga",
+                params=params, headers=headers)
             if r.status_code != 200:
                 log.info("STATUS: %s" % (r.status_code,))
                 log.info("CONTENT: %s" % (r.content,))
@@ -272,7 +266,7 @@ class DownloadAnalytics(object):
 
             return json.loads(r.content)
         except Exception, e:
-              log.exception(e)
+            log.exception(e)
 
         return dict(url=[])
 
@@ -296,7 +290,7 @@ class DownloadAnalytics(object):
 
         result_data = results.get('rows')
         ga_model.update_sitewide_stats(period_name, "Totals", {'Total page views': result_data[0][0]},
-            period_complete_day)
+                                       period_complete_day)
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -327,7 +321,7 @@ class DownloadAnalytics(object):
         ga_model.update_sitewide_stats(period_name, "Totals", data, period_complete_day)
 
         # Bounces from / or another configurable page.
-        path = '/' #% (config.get('googleanalytics.account'),                          config.get('ga-report.bounce_url', '/'))
+        path = '/'  # % (config.get('googleanalytics.account'),                          config.get('ga-report.bounce_url', '/'))
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -360,8 +354,7 @@ class DownloadAnalytics(object):
         # visitBounceRate is already a %
         log.info('Google reports visitBounceRate as %s', bounces)
         ga_model.update_sitewide_stats(period_name, "Totals", {'Bounce rate (home page)': float(bounces)},
-            period_complete_day)
-
+                                       period_complete_day)
 
     def _locale_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Fetches stats about language and country """
@@ -399,7 +392,6 @@ class DownloadAnalytics(object):
             data[result[1]] = data.get(result[1], 0) + int(result[2])
         self._filter_out_long_tail(data, MIN_VIEWS)
         ga_model.update_sitewide_stats(period_name, "Country", data, period_complete_day)
-
 
     def _download_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Fetches stats about data downloads """
@@ -462,12 +454,14 @@ class DownloadAnalytics(object):
                         if filename:
                             sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                  "UNION SELECT distinct id FROM public.resource_revision t " \
-                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                  "UNION SELECT distinct id FROM public.resource t " \
-                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
-                                  "UNION SELECT distinct id FROM public.resource_revision t " \
-                                  "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
+                                                                             "UNION SELECT distinct id FROM public.resource_revision t " \
+                                                                             "WHERE url ilike '%" + filename.group(
+                                1) + "%' " \
+                                     "UNION SELECT distinct id FROM public.resource t " \
+                                     "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                                                                                "UNION SELECT distinct id FROM public.resource_revision t " \
+                                                                                                "WHERE replace(url,'-','') ilike '%" + filename.group(
+                                1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
@@ -477,22 +471,24 @@ class DownloadAnalytics(object):
                         if filename:
                             sql = "SELECT distinct id FROM public.resource t " \
                                   "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                    "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                    "UNION SELECT distinct id FROM public.resource t " \
-                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
-                                    "UNION SELECT distinct id FROM public.resource_revision t " \
-                                    "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' "
+                                                                             "UNION SELECT distinct id FROM public.resource_revision t " \
+                                                                             "WHERE url ilike '%" + filename.group(
+                                1) + "%' " \
+                                     "UNION SELECT distinct id FROM public.resource t " \
+                                     "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
+                                                                                                "UNION SELECT distinct id FROM public.resource_revision t " \
+                                                                                                "WHERE replace(url,'-','') ilike '%" + filename.group(
+                                1) + "%' "
                             res = model.Session.execute(sql).first()
                             if res:
                                 resource_id = res[0]
                                 r = q.filter(model.Resource.id == resource_id).first()
 
                 package_name = ""
-		if r:
-                    if hasattr(r,'resource_group'):
+                if r:
+                    if hasattr(r, 'resource_group'):
                         package_name = r.resource_group.package.name
-                    if hasattr(r,'package'):
+                    if hasattr(r, 'package'):
                         package_name = r.package.name
 
                 if package_name:
@@ -537,7 +533,6 @@ class DownloadAnalytics(object):
                 data[result[0]] = data.get(result[0], 0) + int(result[2])
         ga_model.update_sitewide_stats(period_name, "Social sources", data, period_complete_day)
 
-
     def _os_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Operating system stats """
         try:
@@ -569,7 +564,6 @@ class DownloadAnalytics(object):
             key = "%s %s" % (result[0], result[1])
             data[key] = result[2]
         ga_model.update_sitewide_stats(period_name, "Operating Systems versions", data, period_complete_day)
-
 
     def _browser_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Information about browsers and browser versions """
@@ -650,7 +644,6 @@ class DownloadAnalytics(object):
             log.exception(e)
             results = dict(url=[])
 
-
         result_data = results.get('rows', [])
         data = {}
         for result in result_data:
@@ -674,6 +667,7 @@ class DownloadAnalytics(object):
         for key, value in data.items():
             if value < threshold:
                 del data[key]
+
 
 global host_re
 host_re = None
@@ -700,3 +694,22 @@ def strip_off_host_prefix(url):
 
 class DownloadError(Exception):
     pass
+
+
+if __name__ == '__main__':
+    import logging
+
+    logging.basicConfig()
+
+    from download_analytics import DownloadAnalytics
+    from ga_auth import (init_service, get_profile_id)
+
+    config['googleanalytics.account'] = 'data.gov.au'
+    config['googleanalytics.id'] = 'UA-38578922-1'
+    config['ga-report.period'] = 'monthly'
+    config['googleanalytics.token.filepath'] = os.path.abspath('../../credentials.json')
+
+    token, service = init_service(os.path.abspath('../../credentials.json'))
+    downloader = DownloadAnalytics(service, token, profile_id=get_profile_id(service))
+
+    print downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
