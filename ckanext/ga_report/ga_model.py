@@ -123,16 +123,22 @@ def _get_package_and_publisher(url):
     dataset_match = re.match('/dataset/([^/]+)(/.*)?', url)
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
+        if dataset_ref.startswith("ds-dga-"):
+            log.info("found magda url %s" % dataset_ref)
+            dataset_ref = dataset_ref.replace("ds-dga-", "")
         dataset = model.Package.get(dataset_ref)
         if dataset:
             publisher_groups = dataset.get_groups('organization')
             if publisher_groups:
-                return dataset_ref,publisher_groups[0].name
+                return dataset_ref, publisher_groups[0].name
+        else:
+            log.debug('no dataset found for %s' % dataset_ref)
         return dataset_ref, None
     else:
         publisher_match = re.match('/organization/([^/]+)(/.*)?', url)
         if publisher_match:
             return None, publisher_match.groups()[0]
+    log.debug(" url format unknown for %s" % url)
     return None, None
 
 def update_sitewide_stats(period_name, stat_name, data, period_complete_day):
