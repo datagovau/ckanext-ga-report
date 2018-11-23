@@ -712,4 +712,6 @@ if __name__ == '__main__':
     token, service = init_service(os.path.abspath('../../credentials.json'))
     downloader = DownloadAnalytics(service, token, profile_id=get_profile_id(service))
 
-    print downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
+    result = downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
+
+
