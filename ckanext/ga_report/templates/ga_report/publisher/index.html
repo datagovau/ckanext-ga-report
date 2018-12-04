@@ -18,8 +18,8 @@
   <li><a href="{{h.url_for_static('/site-usage/publisher')}}">Publishers</a></li>
 {% endblock %}
 {% block content %}
-  {# set download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all') #}
-<!--  <a class="btn button btn-primary btn-sm pull-right" href="{{download_link}}"><i class="icon-download"></i>&nbsp; Download as CSV</a>-->
+  {% set download_link=h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport',action='publisher_csv',month=c.month or 'all') %}
+  <a class="btn button btn-primary btn-sm pull-right" href="{{download_link}}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
   <h1>Site Usage</h1>
   <div class="row" style="background: #fff;">
       <div class="col-md-8">
