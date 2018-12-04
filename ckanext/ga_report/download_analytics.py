@@ -253,22 +253,27 @@ class DownloadAnalytics(object):
             print 'ERROR: In the CKAN config you need to specify the filepath of the ' \
                   'Google Analytics token file under key: googleanalytics.token.filepath'
             return
-
+        data = {}
         try:
             headers = {'authorization': 'Bearer ' + self.token}
-            r = requests.get(
-                "https://www.googleapis.com/analytics/v3/data/ga",
-                params=params, headers=headers)
+            r = requests.get("https://www.googleapis.com/analytics/v3/data/ga", params=params, headers=headers)
             if r.status_code != 200:
                 log.info("STATUS: %s" % (r.status_code,))
                 log.info("CONTENT: %s" % (r.content,))
                 raise Exception("Request with params: %s failed" % params)
-
-            return json.loads(r.content)
+            data = json.loads(r.content)
+            has_more = data.get('nextLink')  # use nextLink to check for more pages
+            while has_more:
+                params['start-index'] = int(params.get('start-index',0)) + int(params['max-results'])  # set start to 10,001, 20,001 etc.
+                headers = {'authorization': 'Bearer ' + self.token}
+                r = requests.get(has_more, params=params, headers=headers)
+                rData = json.loads(r.content)
+                has_more = rData.get('nextLink')
+                data['rows']= data['rows'] + rData['rows']
         except Exception, e:
             log.exception(e)
+        return data
 
-        return dict(url=[])
 
     def _totals_stats(self, start_date, end_date, period_name, period_complete_day):
         """ Fetches distinct totals, total pageviews etc """
@@ -698,7 +703,7 @@ class DownloadError(Exception):
 
 if __name__ == '__main__':
     import logging
-
+    import pprint
     logging.basicConfig()
 
     from download_analytics import DownloadAnalytics
@@ -707,11 +712,13 @@ if __name__ == '__main__':
     config['googleanalytics.account'] = 'data.gov.au'
     config['googleanalytics.id'] = 'UA-38578922-1'
     config['ga-report.period'] = 'monthly'
-    config['googleanalytics.token.filepath'] = os.path.abspath('../../credentials.json')
+    config['googleanalytics.token.filepath'] = os.path.abspath('../credentials.json')
 
-    token, service = init_service(os.path.abspath('../../credentials.json'))
+    token, service = init_service(os.path.abspath('../credentials.json'))
     downloader = DownloadAnalytics(service, token, profile_id=get_profile_id(service))
 
     result = downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
+    pprint.pprint(result)
+    print len(result['url'])
 
 
