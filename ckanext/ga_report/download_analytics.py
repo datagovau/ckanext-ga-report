@@ -213,7 +213,7 @@ class DownloadAnalytics(object):
             for entry in results.get('rows', []):
                 (loc, pageviews, visits) = entry
                 # url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
-                url = loc
+                url = loc.replace('/data/','/')
                 # print url
                 if not url.startswith('/dataset/') and not url.startswith('/organization/'):
                     # filter out strays like:

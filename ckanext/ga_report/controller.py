@@ -317,7 +317,7 @@ class GaDatasetReport(BaseController):
             have_download_data = month >= DOWNLOADS_AVAILABLE_FROM
 
         q = model.Session.query(GA_Url,model.Package)\
-            .filter(model.Package.name==GA_Url.package_id)\
+            .filter(model.Package.id==GA_Url.package_id)\
             .filter(GA_Url.url.like('/dataset/%'))
         if publisher:
             q = q.filter(GA_Url.department_id==publisher.name)
@@ -328,7 +328,7 @@ class GaDatasetReport(BaseController):
             entries = q.all()
         else:
             entries = q.limit(count)
-
+		#print(entries)
         for entry,package in entries:
             if package:
                 # Downloads ....
@@ -346,7 +346,7 @@ class GaDatasetReport(BaseController):
                 if package.private == False:
                     top_packages.append((package, entry.pageviews, entry.visits, downloads))
             else:
-                log.warning('Could not find package associated package')
+                log.warning('Could not find package associated package for %s %s',package.id, package.name)
 
         return top_packages
 
