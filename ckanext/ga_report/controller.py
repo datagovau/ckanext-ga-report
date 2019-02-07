@@ -9,7 +9,7 @@ from ckan.lib.base import (BaseController, c, render, request, response, abort)
 from ckan.common import config
 
 import sqlalchemy
-from sqlalchemy import func, cast, Integer
+from sqlalchemy import func, cast, Integer, or_
 import ckan.model as model
 from ga_model import GA_Url, GA_Stat, GA_ReferralStat, GA_Publisher
 
@@ -317,38 +317,41 @@ class GaDatasetReport(BaseController):
             have_download_data = month >= DOWNLOADS_AVAILABLE_FROM
 
         q = model.Session.query(GA_Url,model.Package)\
-            .filter(model.Package.id==GA_Url.package_id)\
+            .filter(or_(model.Package.name==GA_Url.package_id,model.Package.id==GA_Url.package_id))\
             .filter(GA_Url.url.like('/dataset/%'))
         if publisher:
             q = q.filter(GA_Url.department_id==publisher.name)
         q = q.filter(GA_Url.period_name==month)
         q = q.order_by('ga_url.pageviews::int desc')
-        top_packages = []
+        top_packages = {}
         if count == -1:
             entries = q.all()
         else:
             entries = q.limit(count)
 		#print(entries)
         for entry,package in entries:
+            # if the URL could be joined to a package
             if package:
                 # Downloads ....
                 if have_download_data:
-                    dls = model.Session.query(GA_Stat).\
-                        filter(GA_Stat.stat_name=='Downloads').\
-                        filter(GA_Stat.key==package.name)
+                    dls = model.Session.query(GA_Stat). \
+                        filter(GA_Stat.stat_name == 'Downloads'). \
+                        filter(GA_Stat.key == package.name)
                     if month != 'All':  # Fetch everything unless the month is specific
-                        dls = dls.filter(GA_Stat.period_name==month)
+                        dls = dls.filter(GA_Stat.period_name == month)
                     downloads = 0
                     for x in dls:
                         downloads += int(x.value)
                 else:
                     downloads = 'No data'
-                if package.private == False:
-                    top_packages.append((package, entry.pageviews, entry.visits, downloads))
+                if not package.private:
+                    pkg = top_packages.get(package.id, [package, 0, 0, 0])
+                    pkg = (package, int(entry.pageviews) + pkg[1], int(entry.visits) + pkg[2], downloads)
+                    top_packages[package.id] = pkg
             else:
-                log.warning('Could not find package associated package for %s %s',package.id, package.name)
-
-        return top_packages
+                log.warning('Could not find package associated package for %s %s', package.id, package.name)
+        # sort by downloads
+        return sorted(top_packages.values(), key=lambda v: v[3], reverse=True)
 
     def read(self):
         '''
@@ -396,18 +399,19 @@ class GaDatasetReport(BaseController):
         top_packages_all_time = self._get_packages(publisher=c.publisher, count=50, month='All')
         top_package_names = [ x[0].name for x in top_packages_all_time ]
         graph_query = model.Session.query(GA_Url,model.Package)\
-            .filter(model.Package.name==GA_Url.package_id)\
+            .filter(or_(model.Package.name==GA_Url.package_id,model.Package.id==GA_Url.package_id))\
             .filter(GA_Url.url.like('/dataset/%'))\
-            .filter(GA_Url.package_id.in_(top_package_names))
+            .filter(model.Package.name.in_(top_package_names))
         all_series = {}
         for entry,package in graph_query:
             if not package: continue
             if entry.period_name=='All': continue
             all_series[package.name] = all_series.get(package.name,{
                 'name':package.title,
-                'raw': {}
+                'raw': {entry.period_name: 0}
                 })
-            all_series[package.name]['raw'][entry.period_name] = int(entry.pageviews)
+            all_series[package.name]['raw'][entry.period_name] = \
+                all_series[package.name]['raw'].get(entry.period_name,0) + int(entry.pageviews)
         graph = [ all_series[series_name] for series_name in top_package_names ]
         c.graph_data = json.dumps( _to_rickshaw(graph) )
 
