@@ -236,7 +236,7 @@ class DownloadAnalytics(object):
         end_date = '%s-%s' % (period_name, last_day_of_month)
         funcs = ['_totals_stats', '_social_stats', '_os_stats',
                  '_locale_stats', '_browser_stats', '_mobile_stats', '_download_stats']
-        funcs = ['_download_stats']
+
         for f in funcs:
             log.info('Downloading analytics for %s' % f.split('_')[1])
             getattr(self, f)(start_date, end_date, period_name, period_complete_day)
