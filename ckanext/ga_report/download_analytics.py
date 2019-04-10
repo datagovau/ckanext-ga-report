@@ -236,6 +236,7 @@ class DownloadAnalytics(object):
         end_date = '%s-%s' % (period_name, last_day_of_month)
         funcs = ['_totals_stats', '_social_stats', '_os_stats',
                  '_locale_stats', '_browser_stats', '_mobile_stats', '_download_stats']
+        funcs = ['_download_stats']
         for f in funcs:
             log.info('Downloading analytics for %s' % f.split('_')[1])
             getattr(self, f)(start_date, end_date, period_name, period_complete_day)
@@ -415,7 +416,7 @@ class DownloadAnalytics(object):
             args["end-date"] = end_date
             args["ids"] = "ga:" + self.profile_id
 
-            args["filters"] = 'ga:eventAction==Download'
+            args["filters"] = 'ga:eventAction==Download;ga:eventCategory==Resource;ga:eventLabel=@http'
             args["dimensions"] = "ga:eventLabel"
             args["metrics"] = "ga:totalEvents"
             args["alt"] = "json"
@@ -432,62 +433,60 @@ class DownloadAnalytics(object):
             log.info("There is no download data for this time period")
             return
 
-        def process_result_data(result_data, cached=False):
-            progress_total = len(result_data)
-            progress_count = 0
+        def process_result_data(result_data, start_date, end_date):
             resources_not_matched = []
+            f = open("/tmp/resources_not_matched", "w")
+            f.write(' \n')
+            f.close()
+            urls = {}
             for result in result_data:
+                url = urllib.unquote(result[0].strip()).lower().replace('/data/','/')
+                urls[url] = urls.get(url, 0) + int(result[1])
+            progress_total = len(urls)
+            progress_count = 0
+            for (url, count) in urls.items():
                 progress_count += 1
                 if progress_count % 100 == 0:
-                    log.debug('.. %d/%d done so far', progress_count, progress_total)
-
-                url = urllib.unquote(result[0].strip())
+                    log.debug('.. %d/%d resource urls done so far', progress_count, progress_total)
+                    if resources_not_matched:
+                        log.debug('Could not match %i of %i resource URLs to datasets. e.g. %r',
+                                  len(resources_not_matched), progress_total, resources_not_matched[:3])
+                        f = open("/tmp/resources_not_matched", "a")
+                        f.write(' \n'.join(resources_not_matched))
+                        f.close()
+                        resources_not_matched = []
 
                 # Get package id associated with the resource that has this URL.
                 q = model.Session.query(model.Resource)
-                if cached:
-                    r = q.filter(model.Resource.cache_url.like("%s%%" % url)).first()
-                else:
-                    r = q.filter(model.Resource.url.like("%s%%" % url)).first()
+                r = q.filter(model.Resource.url.ilike("%s%%" % url)).first()
 
                 # new style internal download links
-                if re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
+                if not r and re.search('(?:\/resource\/)(.*)(?:\/download\/)', url):
                     resource_id = re.search('(?:\/resource\/)(.*)(?:\/download\/)', url)
                     r = q.filter(model.Resource.id == resource_id.group(1)).first()
+
+                    def search_filename(filename):
+                        sql = "SELECT id FROM public.resource t WHERE url ilike '%" + filename + "%' or replace(url,'-','') ilike '%" + filename + "%'"
+                        res = model.Session.execute(sql).first()
+                        if res:
+                            resource_id = res[0]
+                            return q.filter(model.Resource.id == resource_id).first()
+                        sql = "SELECT id FROM public.resource_revision t " \
+                              "WHERE (url ilike '%" + filename + "%' or replace(url,'-','') ilike '%" + filename + "%') " \
+                             "and '"+start_date+"' <= revision_timestamp  and '"+end_date+"' >= expired_timestamp"
+                        res = model.Session.execute(sql).first()
+                        if res:
+                            resource_id = res[0]
+                            return q.filter(model.Resource.id == resource_id).first()
+                        return None
                     if not r:
                         filename = re.search('download\/(.*)', url)
                         if filename:
-                            sql = "SELECT distinct id FROM public.resource t " \
-                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                                                             "UNION SELECT distinct id FROM public.resource_revision t " \
-                                                                             "WHERE url ilike '%" + filename.group(
-                                1) + "%' " \
-                                     "UNION SELECT distinct id FROM public.resource t " \
-                                     "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
-                                                                                                "UNION SELECT distinct id FROM public.resource_revision t " \
-                                                                                                "WHERE replace(url,'-','') ilike '%" + filename.group(
-                                1) + "%' "
-                            res = model.Session.execute(sql).first()
-                            if res:
-                                resource_id = res[0]
-                                r = q.filter(model.Resource.id == resource_id).first()
+                            r = search_filename(filename.group(1))
                     if not r:
                         filename = re.search('(\w+\.\w+$)', url)
                         if filename:
-                            sql = "SELECT distinct id FROM public.resource t " \
-                                  "WHERE url ilike '%" + filename.group(1) + "%' " \
-                                                                             "UNION SELECT distinct id FROM public.resource_revision t " \
-                                                                             "WHERE url ilike '%" + filename.group(
-                                1) + "%' " \
-                                     "UNION SELECT distinct id FROM public.resource t " \
-                                     "WHERE replace(url,'-','') ilike '%" + filename.group(1) + "%' " \
-                                                                                                "UNION SELECT distinct id FROM public.resource_revision t " \
-                                                                                                "WHERE replace(url,'-','') ilike '%" + filename.group(
-                                1) + "%' "
-                            res = model.Session.execute(sql).first()
-                            if res:
-                                resource_id = res[0]
-                                r = q.filter(model.Resource.id == resource_id).first()
+                            r = search_filename(filename.group(1))
 
                 package_name = ""
                 if r:
@@ -497,16 +496,20 @@ class DownloadAnalytics(object):
                         package_name = r.package.name
 
                 if package_name:
-                    data[package_name] = data.get(package_name, 0) + int(result[1])
+                    data[package_name] = data.get(package_name, 0) + int(count)
                 else:
                     resources_not_matched.append(url)
                     continue
             if resources_not_matched:
-                log.debug('Could not match %i or %i resource URLs to datasets. e.g. %r',
-                          len(resources_not_matched), progress_total, resources_not_matched[:3])
+                log.debug('Could not match %i of %i resource URLs to datasets. e.g. %r',
+                          len(resources_not_matched), progress_total, resources_not_matched[:30])
+                f = open("/tmp/resources_not_matched", "a")
+                f.write(' \n'.join(resources_not_matched))
+                f.close()
+
 
         log.info('Associating downloads of resource URLs with their respective datasets')
-        process_result_data(results.get('rows'))
+        process_result_data(results.get('rows'), start_date, end_date)
 
         ga_model.update_sitewide_stats(period_name, "Downloads", data, period_complete_day)
 
@@ -712,13 +715,15 @@ if __name__ == '__main__':
     config['googleanalytics.account'] = 'data.gov.au'
     config['googleanalytics.id'] = 'UA-38578922-1'
     config['ga-report.period'] = 'monthly'
-    config['googleanalytics.token.filepath'] = os.path.abspath('../credentials.json')
+    config['googleanalytics.token.filepath'] = os.path.abspath('../../credentials.json')
 
-    token, service = init_service(os.path.abspath('../credentials.json'))
+    token, service = init_service(os.path.abspath('../../credentials.json'))
     downloader = DownloadAnalytics(service, token, profile_id=get_profile_id(service))
 
-    result = downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
+    #result = downloader.download(datetime.date(2018, 7, 1), datetime.date(2018, 8, 1),'~^/dataset/[a-z0-9-_]+')
+    #pprint.pprint(result)
+    result = downloader._download_stats('2019-04-01','2019-04-09', '2019-04',9)
     pprint.pprint(result)
-    print len(result['url'])
+    #print len(result['url'])
 
 
