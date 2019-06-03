@@ -126,10 +126,11 @@ def _get_package_and_publisher(url):
         if dataset_ref.startswith("ds-") and not dataset_ref.startswith("ds-dga-"):
 			return dataset_ref, None
         if dataset_ref.startswith("ds-dga-"):
-            log.info("found magda url %s" % dataset_ref)
+            #log.info("found magda url %s" % dataset_ref)
             dataset_ref = dataset_ref.replace("ds-dga-", "")
         dataset = model.Package.get(dataset_ref)
         if dataset:
+            #log.info("found "+ dataset_ref)
             publisher_groups = dataset.get_groups('organization')
             if publisher_groups:
                 return dataset_ref, publisher_groups[0].name

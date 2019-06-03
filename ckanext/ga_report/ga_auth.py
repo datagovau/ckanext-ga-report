@@ -65,6 +65,10 @@ def get_profile_id(service):
         accountId=accountId, webPropertyId=webPropertyId).execute()
 
     if profiles.get('items'):
+        for item in profiles.get('items'):
+            if item.get("name") == 'data.gov.au':
+                print "found data.gov.au profile"
+                return item.get('id')
         return profiles.get('items')[0].get('id')
 
     return None

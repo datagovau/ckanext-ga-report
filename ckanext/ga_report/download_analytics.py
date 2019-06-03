@@ -121,13 +121,13 @@ class DownloadAnalytics(object):
                 accountName = config.get('googleanalytics.account')
 
                 log.info('Downloading analytics for dataset views')
-                data = self.download(start_date, end_date, '~^/dataset/[a-z0-9-_]+')
+                data = self.download(start_date, end_date, '~^[/data]*/dataset/[a-z0-9-_]+')
 
                 log.info('Storing dataset views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
 
                 log.info('Downloading analytics for publisher views')
-                data = self.download(start_date, end_date, '~^/organization/[a-z0-9-_]+')
+                data = self.download(start_date, end_date, '~^[/data]*/organization/[a-z0-9-_]+')
 
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
@@ -236,7 +236,6 @@ class DownloadAnalytics(object):
         end_date = '%s-%s' % (period_name, last_day_of_month)
         funcs = ['_totals_stats', '_social_stats', '_os_stats',
                  '_locale_stats', '_browser_stats', '_mobile_stats', '_download_stats']
-
         for f in funcs:
             log.info('Downloading analytics for %s' % f.split('_')[1])
             getattr(self, f)(start_date, end_date, period_name, period_complete_day)
@@ -440,7 +439,7 @@ class DownloadAnalytics(object):
             f.close()
             urls = {}
             for result in result_data:
-                url = urllib.unquote(result[0].strip()).lower().replace('/data/','/')
+                url = urllib.unquote(result[0].strip()).lower().replace('/data/','/').encode('utf-8').strip()
                 urls[url] = urls.get(url, 0) + int(result[1])
             progress_total = len(urls)
             progress_count = 0
@@ -526,7 +525,8 @@ class DownloadAnalytics(object):
                         sort='-ga:pageviews',
                         dimensions="ga:socialNetwork,ga:referralPath",
                         max_results=10000)
-            args['start-date'] = start_date
+            args["max-results"] = 100000
+			args['start-date'] = start_date
             args['end-date'] = end_date
 
             results = self._get_json(args)
