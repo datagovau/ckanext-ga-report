@@ -88,7 +88,7 @@ class LoadAnalytics(CkanCommand):
                                action='store_true',
                                default=False,
                                dest='skip_url_stats',
-                               help='Skip the download of URL data - just do site-wide stats')
+                               help='Skip the download of dataset URL data - just do site-wide stats')
         self.token = ""
 
     def command(self):

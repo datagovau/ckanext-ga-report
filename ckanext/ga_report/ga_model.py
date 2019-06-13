@@ -38,7 +38,8 @@ mapper(GA_Url, url_table)
 
 
 class GA_Stat(object):
-
+    def __str__(self):
+        return str({'id': self.id, 'period_name': self.period_name, 'period_complete_day': self.period_complete_day, 'stat_name': self.stat_name, 'key': self.key, 'value': self.value})
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self, k, v)

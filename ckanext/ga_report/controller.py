@@ -43,7 +43,6 @@ def _month_details(cls, stat_key=None):
         .filter(cls.period_name!='All').distinct(cls.period_name)
     if stat_key:
         q=  q.filter(cls.stat_name==stat_key)
-
     vals = q.order_by("period_name desc").all()
 
     if vals and vals[0][1]:
@@ -82,7 +81,6 @@ class GaReport(BaseController):
 
 
     def index(self):
-
         # Get the month details by fetching distinct values and determining the
         # month names from the values.
         c.months, c.day = _month_details(GA_Stat)

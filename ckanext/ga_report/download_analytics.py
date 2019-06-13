@@ -114,6 +114,12 @@ class DownloadAnalytics(object):
                          period_name)
                 ga_model.delete(period_name)
 
+            log.info('Downloading and storing analytics for site-wide stats')
+            self.sitewide_stats(period_name, period_complete_day)
+
+            log.info('Downloading and storing analytics for social networks')
+            self.update_social_info(period_name, start_date, end_date)
+
             if not self.skip_url_stats:
                 # Clean out old url data before storing the new
                 ga_model.pre_update_url_stats(period_name)
@@ -132,17 +138,15 @@ class DownloadAnalytics(object):
                 log.info('Storing publisher views (%i rows)', len(data.get('url')))
                 self.store(period_name, period_complete_day, data, )
 
-                # Make sure the All records are correct.
-                ga_model.post_update_url_stats()
-
                 log.info('Associating datasets with their publisher')
                 ga_model.update_publisher_stats(period_name)  # about 30 seconds.
 
-            log.info('Downloading and storing analytics for site-wide stats')
-            self.sitewide_stats(period_name, period_complete_day)
+                # datasets download count stats
+                self._download_stats(start_date, end_date, period_name, period_complete_day)
+            # Make sure the All records are correct.
+            ga_model.post_update_url_stats()
 
-            log.info('Downloading and storing analytics for social networks')
-            self.update_social_info(period_name, start_date, end_date)
+
 
     def update_social_info(self, period_name, start_date, end_date):
         start_date = start_date.strftime('%Y-%m-%d')
@@ -235,7 +239,7 @@ class DownloadAnalytics(object):
         start_date = '%s-01' % period_name
         end_date = '%s-%s' % (period_name, last_day_of_month)
         funcs = ['_totals_stats', '_social_stats', '_os_stats',
-                 '_locale_stats', '_browser_stats', '_mobile_stats', '_download_stats']
+                 '_locale_stats', '_browser_stats', '_mobile_stats']
         for f in funcs:
             log.info('Downloading analytics for %s' % f.split('_')[1])
             getattr(self, f)(start_date, end_date, period_name, period_complete_day)
@@ -526,7 +530,7 @@ class DownloadAnalytics(object):
                         dimensions="ga:socialNetwork,ga:referralPath",
                         max_results=10000)
             args["max-results"] = 100000
-			args['start-date'] = start_date
+            args['start-date'] = start_date
             args['end-date'] = end_date
 
             results = self._get_json(args)
