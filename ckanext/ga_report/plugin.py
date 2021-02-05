@@ -45,49 +45,49 @@ class GAReportPlugin(p.SingletonPlugin):
     def after_map(self, map):
         # GaReport
         map.connect(
-            '/site-usage',
+            '/data/site-usage',
             controller='ckanext.ga_report.controller:GaReport',
             action='index'
         )
         map.connect(
-            '/site-usage_{month}.csv',
+            '/data/site-usage_{month}.csv',
             controller='ckanext.ga_report.controller:GaReport',
             action='csv'
         )
         map.connect(
-            '/site-usage/downloads',
+            '/data/site-usage/downloads',
             controller='ckanext.ga_report.controller:GaReport',
             action='downloads'
         )
         map.connect(
-            '/site-usage/downloads_{month}.csv',
+            '/data/site-usage/downloads_{month}.csv',
             controller='ckanext.ga_report.controller:GaReport',
             action='csv_downloads'
         )
 
         # GaDatasetReport
         map.connect(
-            '/site-usage/publisher',
+            '/data/site-usage/publisher',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='publishers'
         )
         map.connect(
-            '/site-usage/publishers_{month}.csv',
+            '/data/site-usage/publishers_{month}.csv',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='publisher_csv'
         )
         map.connect(
-            '/site-usage/dataset/datasets_{id}_{month}.csv',
+            '/data/site-usage/dataset/datasets_{id}_{month}.csv',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='dataset_csv'
         )
         map.connect(
-            '/site-usage/dataset',
+            '/data/site-usage/dataset',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='read'
         )
         map.connect(
-            '/site-usage/dataset/{id}',
+            '/data/site-usage/dataset/{id}',
             controller='ckanext.ga_report.controller:GaDatasetReport',
             action='read_publisher'
         )
