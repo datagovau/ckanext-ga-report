@@ -13,10 +13,10 @@
   <script type="text/javascript" src="/scripts/vendor/rickshaw.min.js"></script>
 {% endblock %}
 {% block breadcrumbs %}
-  <li><a href="{{h.url_for_static('/site-usage')}}">Site Analytics</a></li>
+  <li><a href="{{h.url_for_static('/data/site-usage')}}">Site Analytics</a></li>
   {% if c.publisher %}
     <li><a href="{{h.url_for_static('/site-publisher')}}">Publishers</a></li>
-    <li ><a href="{{h.url_for_static('/site-usage/publisher/' + c.publisher.name)}}">{{c.publisher.title}}</a></li>
+    <li ><a href="{{h.url_for_static('/data/site-usage/publisher/' + c.publisher.name)}}">{{c.publisher.title}}</a></li>
   {% else %}
     <li><a href="{{request.url}}">Usage By Dataset</a></li>
   {% endif %}
