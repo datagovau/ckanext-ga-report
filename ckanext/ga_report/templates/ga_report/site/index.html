@@ -3,8 +3,8 @@
 
 {% block page_title %}Site usage{% endblock %}
 {% block breadcrumbs %}
-  <li><a href="{{h.url_for_static('site-usage')}}">Site Analytics</a></li>
-  <li><a href="{{h.url_for_static('site-usage')}}">Site-wide</a></li>
+  <li><a href="{{h.url_for_static('data/site-usage')}}">Site Analytics</a></li>
+  <li><a href="{{h.url_for_static('data/site-usage')}}">Site-wide</a></li>
 {% endblock %}
 {% block content %}
   <div class="row">
@@ -19,8 +19,8 @@
         <div class="panel-heading"><strong>Jump To...</strong></div>
         <div class="panel-body">
           <ul>
-            <li><a href="{{h.url_for_static('/site-usage/publisher')}}">Publisher Usage Statistics</a></li>
-            <li><a href="{{h.url_for_static('/site-usage/dataset')}}">Dataset Usage Statistics</a></li>
+            <li><a href="{{h.url_for_static('/data/site-usage/publisher')}}">Publisher Usage Statistics</a></li>
+            <li><a href="{{h.url_for_static('/data/site-usage/dataset')}}">Dataset Usage Statistics</a></li>
           </ul>
         </div>
       </div>
