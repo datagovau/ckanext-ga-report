@@ -13,14 +13,14 @@ from ckan.lib.base import *
 log = __import__('logging').getLogger(__name__)
 
 def make_uuid():
-    return str(uuid.uuid4())
+    return unicode(uuid.uuid4())
 
 metadata = MetaData()
 
 class GA_Url(object):
 
     def __init__(self, **kwargs):
-        for k,v in list(kwargs.items()):
+        for k,v in kwargs.items():
             setattr(self, k, v)
 
 url_table = Table('ga_url', metadata,
@@ -41,7 +41,7 @@ class GA_Stat(object):
     def __str__(self):
         return str({'id': self.id, 'period_name': self.period_name, 'period_complete_day': self.period_complete_day, 'stat_name': self.stat_name, 'key': self.key, 'value': self.value})
     def __init__(self, **kwargs):
-        for k,v in list(kwargs.items()):
+        for k,v in kwargs.items():
             setattr(self, k, v)
 
 stat_table = Table('ga_stat', metadata,
@@ -58,7 +58,7 @@ mapper(GA_Stat, stat_table)
 class GA_Publisher(object):
 
     def __init__(self, **kwargs):
-        for k,v in list(kwargs.items()):
+        for k,v in kwargs.items():
             setattr(self, k, v)
 
 pub_table = Table('ga_publisher', metadata,
@@ -78,7 +78,7 @@ mapper(GA_Publisher, pub_table)
 class GA_ReferralStat(object):
 
     def __init__(self, **kwargs):
-        for k,v in list(kwargs.items()):
+        for k,v in kwargs.items():
             setattr(self, k, v)
 
 referrer_table = Table('ga_referrer', metadata,
@@ -146,7 +146,7 @@ def _get_package_and_publisher(url):
     return None, None
 
 def update_sitewide_stats(period_name, stat_name, data, period_complete_day):
-    for k,v in data.items():
+    for k,v in data.iteritems():
         item = model.Session.query(GA_Stat).\
             filter(GA_Stat.period_name==period_name).\
             filter(GA_Stat.key==k).\
@@ -208,9 +208,9 @@ def post_update_url_stats():
         views[row[0]] = views.get(row[0], 0) + row[1]
         visits[row[0]] = visits.get(row[0], 0) + row[2]
 
-    progress_total = len(list(views.keys()))
+    progress_total = len(views.keys())
     progress_count = 0
-    for key in list(views.keys()):
+    for key in views.keys():
         progress_count += 1
         if progress_count % 100 == 0:
             log.debug('.. %d/%d done so far', progress_count, progress_total)
@@ -302,7 +302,7 @@ def update_social(period_name, data):
     model.Session.query(GA_ReferralStat).\
         filter(GA_ReferralStat.period_name==period_name).delete()
 
-    for url,data in data.items():
+    for url,data in data.iteritems():
         for entry in data:
             source = entry[0]
             count = entry[1]

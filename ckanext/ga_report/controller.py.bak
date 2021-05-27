@@ -13,7 +13,7 @@ from ckan.common import config
 import sqlalchemy
 from sqlalchemy import func, cast, Integer, or_
 import ckan.model as model
-from .ga_model import GA_Url, GA_Stat, GA_ReferralStat, GA_Publisher
+from ga_model import GA_Url, GA_Stat, GA_ReferralStat, GA_Publisher
 
 log = logging.getLogger('ckanext.ga-report')
 
@@ -73,8 +73,8 @@ class GaReport(Blueprint):
 
         #response.headers[u'content-type'] = u'application/octet-stream'
 
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = str('attachment; filename=stats_%s.csv' % (month,))
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = str(u'attachment; filename=stats_%s.csv' % (month,))
 
         writer = csv.writer(response)
         writer.writerow(["Period", "Statistic", "Key", "Value"])
@@ -142,7 +142,7 @@ class GaReport(Blueprint):
             d = collections.defaultdict(list)
             for e in entries:
                 d[e.key].append(float(e.value))
-            for k, v in d.items():
+            for k, v in d.iteritems():
                 if k in ['Total page views', 'Total visits']:
                     v = sum(v)
                 else:
@@ -174,8 +174,8 @@ class GaReport(Blueprint):
             return (name[:length] + '..') if len(name) > 60 else name
 
         def fill_out_url(url):
-            import urllib.parse
-            return urllib.parse.urljoin(config['ckan.site_url'], url)
+            import urlparse
+            return urlparse.urljoin(config['ckan.site_url'], url)
 
         c.social_referrer_totals, c.social_referrers = [], []
         q = model.Session.query(GA_ReferralStat)
@@ -193,7 +193,7 @@ class GaReport(Blueprint):
             c.social_referrer_totals.append((shorten_name(entry[0]), fill_out_url(entry[0]),'',
                                             entry[1]))
 
-        for k, v in keys.items():
+        for k, v in keys.iteritems():
             q = model.Session.query(GA_Stat).\
                 filter(GA_Stat.stat_name==k).\
                 order_by(GA_Stat.period_name)
@@ -206,7 +206,7 @@ class GaReport(Blueprint):
             for e in q.all():
                 d[e.key] += int(e.value)
             entries = []
-            for key, val in d.items():
+            for key, val in d.iteritems():
                 entries.append((key,val,))
             entries = sorted(entries, key=operator.itemgetter(1), reverse=True)
 
@@ -253,8 +253,8 @@ class GaDatasetReport(Blueprint):
         # nikis input
         response = make_response()
 
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = str('attachment; filename=publishers_%s.csv' % (month,))
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = str(u'attachment; filename=publishers_%s.csv' % (month,))
 
         writer = csv.writer(response)
         writer.writerow(["Publisher Title", "Publisher Name", "Views", "Visits", "Period Name"])
@@ -287,9 +287,9 @@ class GaDatasetReport(Blueprint):
         # nikis input
         response = make_response()
 
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = \
-            str('attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = \
+            str(u'attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
 
         writer = csv.writer(response)
         writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Period Name"])
@@ -366,7 +366,7 @@ class GaDatasetReport(Blueprint):
             else:
                 log.warning('Could not find package associated package for %s %s', package.id, package.name)
         # sort by downloads
-        return sorted(list(top_packages.values()), key=lambda v: v[3], reverse=True)
+        return sorted(top_packages.values(), key=lambda v: v[3], reverse=True)
 
     def read(self):
         '''

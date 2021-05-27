@@ -1,15 +1,15 @@
 import os
 import logging
 import datetime
-import http.client
-import urllib.request, urllib.parse, urllib.error
+import httplib
+import urllib
 import collections
 import requests
 import json
 import re
 from pylons import config
-from .ga_model import _normalize_url
-from . import ga_model
+from ga_model import _normalize_url
+import ga_model
 
 # from ga_client import GA
 
@@ -171,7 +171,7 @@ class DownloadAnalytics(object):
             args['end-date'] = end_date
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -204,10 +204,10 @@ class DownloadAnalytics(object):
             args["ids"] = "ga:" + self.profile_id
             args["filters"] = query
             args["alt"] = "json"
-            print(args)
+            print args
             results = self._get_json(args)
 
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             return dict(url=[])
 
@@ -254,8 +254,8 @@ class DownloadAnalytics(object):
     def _get_json(self, params, prev_fail=False):
         ga_token_filepath = os.path.expanduser(config.get('googleanalytics.token.filepath', ''))
         if not ga_token_filepath:
-            print('ERROR: In the CKAN config you need to specify the filepath of the ' \
-                  'Google Analytics token file under key: googleanalytics.token.filepath')
+            print 'ERROR: In the CKAN config you need to specify the filepath of the ' \
+                  'Google Analytics token file under key: googleanalytics.token.filepath'
             return
         data = {}
         try:
@@ -274,7 +274,7 @@ class DownloadAnalytics(object):
                 rData = json.loads(r.content)
                 has_more = rData.get('nextLink')
                 data['rows']= data['rows'] + rData['rows']
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
         return data
 
@@ -293,7 +293,7 @@ class DownloadAnalytics(object):
             args["alt"] = "json"
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -316,7 +316,7 @@ class DownloadAnalytics(object):
             args["alt"] = "json"
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -349,7 +349,7 @@ class DownloadAnalytics(object):
             args["alt"] = "json"
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -385,7 +385,7 @@ class DownloadAnalytics(object):
             args["alt"] = "json"
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -425,7 +425,7 @@ class DownloadAnalytics(object):
             args["alt"] = "json"
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -443,11 +443,11 @@ class DownloadAnalytics(object):
             f.close()
             urls = {}
             for result in result_data:
-                url = urllib.parse.unquote(result[0].strip()).lower().replace('/data/','/').encode('utf-8').strip()
+                url = urllib.unquote(result[0].strip()).lower().replace('/data/','/').encode('utf-8').strip()
                 urls[url] = urls.get(url, 0) + int(result[1])
             progress_total = len(urls)
             progress_count = 0
-            for (url, count) in list(urls.items()):
+            for (url, count) in urls.items():
                 progress_count += 1
                 if progress_count % 100 == 0:
                     log.debug('.. %d/%d resource urls done so far', progress_count, progress_total)
@@ -534,7 +534,7 @@ class DownloadAnalytics(object):
             args['end-date'] = end_date
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -561,7 +561,7 @@ class DownloadAnalytics(object):
             args['end-date'] = end_date
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -595,7 +595,7 @@ class DownloadAnalytics(object):
             args['end-date'] = end_date
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -652,7 +652,7 @@ class DownloadAnalytics(object):
             args['end-date'] = end_date
 
             results = self._get_json(args)
-        except Exception as e:
+        except Exception, e:
             log.exception(e)
             results = dict(url=[])
 
@@ -676,7 +676,7 @@ class DownloadAnalytics(object):
         results which are below a threshold count. This is good to protect
         privacy.
         '''
-        for key, value in list(data.items()):
+        for key, value in data.items():
             if value < threshold:
                 del data[key]
 
@@ -713,8 +713,8 @@ if __name__ == '__main__':
     import pprint
     logging.basicConfig()
 
-    from .download_analytics import DownloadAnalytics
-    from .ga_auth import (init_service, get_profile_id)
+    from download_analytics import DownloadAnalytics
+    from ga_auth import (init_service, get_profile_id)
 
     config['googleanalytics.account'] = 'data.gov.au'
     config['googleanalytics.id'] = 'UA-38578922-1'
