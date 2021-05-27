@@ -125,7 +125,7 @@ def _get_package_and_publisher(url):
     if dataset_match:
         dataset_ref = dataset_match.groups()[0]
         if dataset_ref.startswith("ds-") and not dataset_ref.startswith("ds-dga-"):
-			return dataset_ref, None
+            return dataset_ref, None
         if dataset_ref.startswith("ds-dga-"):
             #log.info("found magda url %s" % dataset_ref)
             dataset_ref = dataset_ref.replace("ds-dga-", "")

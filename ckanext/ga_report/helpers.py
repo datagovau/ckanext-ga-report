@@ -8,7 +8,8 @@ from ckan.logic import get_action
 from ckanext.ga_report.ga_model import GA_Url, GA_Publisher
 from ckanext.ga_report.controller import _get_publishers
 
-from pylons import config
+#from pylons import config
+from ckan.plugins.toolkit import config
 
 _log = logging.getLogger(__name__)
 

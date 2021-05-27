@@ -5,7 +5,9 @@ import json
 import logging
 import operator
 import collections
-from ckan.lib.base import (BaseController, c, render, request, response, abort)
+from ckan.lib.base import (c, render, request, abort)
+# remove BaseController from above and replace with blueprint below
+from flask import Blueprint, make_response
 from ckan.common import config
 
 import sqlalchemy
@@ -57,7 +59,7 @@ def _month_details(cls, stat_key=None):
     return months, day
 
 
-class GaReport(BaseController):
+class GaReport(Blueprint):
 
     def csv(self, month):
         import csv
@@ -66,9 +68,13 @@ class GaReport(BaseController):
         if month != 'all':
             q = q.filter(GA_Stat.period_name==month)
         entries = q.order_by('GA_Stat.period_name, GA_Stat.stat_name, GA_Stat.key').all()
+        # nikis input
+        response = make_response()
 
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = str('attachment; filename=stats_%s.csv' % (month,))
+        #response.headers[u'content-type'] = u'application/octet-stream'
+
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = str(u'attachment; filename=stats_%s.csv' % (month,))
 
         writer = csv.writer(response)
         writer.writerow(["Period", "Statistic", "Key", "Value"])
@@ -78,6 +84,7 @@ class GaReport(BaseController):
                              entry.stat_name.encode('utf-8'),
                              entry.key.encode('utf-8'),
                              entry.value.encode('utf-8')])
+        return response
 
 
     def index(self):
@@ -231,7 +238,7 @@ class GaReport(BaseController):
         return render('ga_report/site/index.html')
 
 
-class GaDatasetReport(BaseController):
+class GaDatasetReport(Blueprint):
     """
     Displays the pageview and visit count for datasets
     with options to filter by publisher and time period.
@@ -242,8 +249,12 @@ class GaDatasetReport(BaseController):
         views & visits.
         '''
         c.month = month if not month == 'all' else ''
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = str('attachment; filename=publishers_%s.csv' % (month,))
+
+        # nikis input
+        response = make_response()
+
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = str(u'attachment; filename=publishers_%s.csv' % (month,))
 
         writer = csv.writer(response)
         writer.writerow(["Publisher Title", "Publisher Name", "Views", "Visits", "Period Name"])
@@ -256,6 +267,7 @@ class GaDatasetReport(BaseController):
                              view,
                              visit,
                              month])
+        return response
 
     def dataset_csv(self, id='all', month='all'):
         '''
@@ -271,9 +283,13 @@ class GaDatasetReport(BaseController):
                 abort(404, 'A publisher with that name could not be found')
 
         packages = self._get_packages(publisher=c.publisher, month=c.month)
-        response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = \
-            str('attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
+
+        # nikis input
+        response = make_response()
+
+        response.headers[u'Content-Type'] = u"text/csv; charset=utf-8"
+        response.headers[u'Content-Disposition'] = \
+            str(u'attachment; filename=datasets_%s_%s.csv' % (c.publisher_name, month,))
 
         writer = csv.writer(response)
         writer.writerow(["Dataset Title", "Dataset Name", "Views", "Visits", "Resource downloads", "Period Name"])
@@ -285,6 +301,7 @@ class GaDatasetReport(BaseController):
                              visit,
                              downloads,
                              month])
+        return response
 
     def publishers(self):
         '''A list of publishers and the number of views/visits for each'''
